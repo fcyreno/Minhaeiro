@@ -17,11 +17,10 @@ print("6. Outros")
 
 # Escolha do usuário
 valor = input("----> Escolha uma das opções: ")
-
 # Atribuição dos valores de despesa
 if valor == "1":
     despesa_alimentacao = float(input("Insira um valor: "))
-
+    y = despesa_alimentacao
     print(f"A sua despesa com alimentação é de {despesa_alimentacao} R$")
 
 elif valor == "2":
@@ -62,7 +61,7 @@ dados_receita = {
     "despesalazer": despesa_lazer,
     "despesaoutros": despesa_outros,
 }
-
+print(dados_receita)
 try:
     with open('dados.json', 'r') as arquivo: # Lê o conteúdo do arquivo JSON
 
@@ -83,7 +82,7 @@ with open('dados.json', 'w') as arquivo: # Salvar as alterações no arquivo JSO
 
 excluir = str(input("Deseja excluir seus dados S/N? "))
 
-if(excluir == 'S' or 's'):
+if(excluir == 'S'):
 
     del dados[-1]
    
@@ -106,12 +105,6 @@ if modificar_dados == 'S':
         valor = (input("Insira um valor: "))
         dados_receita.update({"despesaalimentacao":valor})
         print(dados_receita)
-     for x in dados_receita:
-            if x == 'despesaalimentacao':
-                x = valor
-            break
-    print(valor)
-        #renomear 'despesaalimentacao'[-1]
-    
-with open('teste.json', 'w') as arquivo:
+
+with open('dados.json', 'w') as arquivo:
             json.dump(dados_receita, arquivo, indent=4)'''
