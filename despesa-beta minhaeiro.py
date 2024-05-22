@@ -75,7 +75,7 @@ with open('dados.json', 'w') as arquivo:
     json.dump(dados, arquivo, indent=4)
 
 # Pergunta se o usuário deseja excluir os dados
-excluir = input("Deseja excluir seus dados S/N? ").strip().upper()
+excluir = input("Deseja excluir seus dados S/N? ")
 
 if excluir == 'S':
     del dados[-1]
@@ -83,7 +83,7 @@ if excluir == 'S':
         json.dump(dados, arquivo, indent=4)
 
 # Pergunta se o usuário deseja modificar os dados
-modificar_dados = input("Deseja modificar seus dados S/N? ").strip().upper()
+modificar_dados = input("Deseja modificar seus dados S/N? ")
 
 if modificar_dados == 'S':
     print("1. Alimentação")
