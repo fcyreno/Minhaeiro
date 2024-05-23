@@ -227,6 +227,15 @@ def main():
                         elif opcao_modulo_usuario == '3':
                             excluir_usuario(id_usuario)
                             break
+                        elif opcao_modulo_usuario == '4':
+                            print("\nVoltando ao menu anterior!")
+                            sleep(3)
+                            limpar_tela()
+                        else:
+                            print("\nOpção incorreta!")
+                            print("Retornando ao Menu de Módulos")
+                            sleep(3)
+                            limpar_tela()
 
                     elif opcao_modulo =='2':
                         modulo_receitas()
