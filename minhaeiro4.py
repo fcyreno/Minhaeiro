@@ -4,6 +4,8 @@ import json
 from datetime import datetime
 from time import sleep
 import random
+from prettytable import PrettyTable
+
 
 #Classe para manipular a cor dos caracteres
 class cor:
@@ -98,15 +100,12 @@ def listar_dados_usuario(usuario_id):
 
     for usuario in usuarios:
         if usuario['id'] == usuario_id:
-            print("\nID:      ", usuario['id'])
+            print("ID:      ", usuario['id'])
             print("Nome:    ", usuario['nome'])
             print("IDADE:   ", usuario['idade'])
             print("E-MAIL:  ", usuario['email'])
             print("SENHA:   ", usuario['senha'])
             input("Digite [ENTER] para prosseguir")
-        else:
-            print("\nUsuário não encontrado!")
-            sleep(3)
             break
 
 #Modifica os dados do usuário logado
@@ -183,18 +182,23 @@ def listar_receitas(usuario_id):
             receitas = json.load(f)
  
     contador = 0
-    print("=" *75)
-    print("LISTA DE RECEITAS")
-    print("-" *75)
+    table = PrettyTable()
+    tabela = []
+
     for receita in receitas:
         if receita['id'] == usuario_id:
-            contador +=1
-            print("*" *75)
-            print(f"TRANSAÇÃO: {receita['transacao']}, VALOR: R${receita['valor']}, DATA: {receita['data']}, CATEGORIA: {receita['categoria']}, DESCRIÇÃO: {receita['descricao']}")
-            print("*" *75)
-            print("=" *75)
+            contador += 1
+            receita_ = [receita['transacao'], receita['valor'], receita['data'], receita['categoria'], receita['descricao']]
+            tabela.append(receita_)
+        
     if contador == 0:
         print("\nReceitas não encontradas!")
+    else:
+        table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [AAAA-MM-DD]", "CATEGORIA", "DESCRIÇÃO"]
+        for elemento in tabela:
+            table.add_row(elemento)
+    
+    print(table)
     
 def alterar_receitas(transacao_, novo_valor, nova_data, nova_categoria, nova_descricao):
     with open(arquivo_receitas, 'r') as f:
@@ -259,21 +263,26 @@ def adicionar_despesa(usuario_id, valor_, data_, categoria_despesas_, descricao_
 def listar_despesas(usuario_id):
     with open(arquivo_despesas, 'r') as f:
             despesas = json.load(f)
- 
+
     contador = 0
-    print("=" *75)
-    print("LISTA DE DESPESAS")
-    print("-" *75)
+    table = PrettyTable()
+    tabela = []
+
     for despesa in despesas:
         if despesa['id'] == usuario_id:
-            contador +=1
-            print("*" *75)
-            print(f"TRANSAÇÃO: {despesa['transacao']}, VALOR: R${despesa['valor']}, DATA: {despesa['data']}, CATEGORIA: {despesa['categoria']}, DESCRIÇÃO: {despesa['descricao']}")
-            print("*" *75)
-            print("=" *75)
+            contador += 1
+            despesa_ = [despesa['transacao'], despesa['valor'], despesa['data'], despesa['categoria'], despesa['descricao']]
+            tabela.append(despesa_)
+        
     if contador == 0:
-        print("Despesas não encontradas!")
+        print("\nDespesas não encontradas!")
+    else:
+        table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [AAAA-MM-DD]", "CATEGORIA", "DESCRIÇÃO"]
+        for elemento in tabela:
+            table.add_row(elemento)
     
+    print(table)
+
 def alterar_despesas(transacao_, novo_valor, nova_data, nova_categoria, nova_descricao):
     with open(arquivo_despesas, 'r') as f:
             despesas = json.load(f)
@@ -296,7 +305,7 @@ def excluir_despesa(transacao_):
         despesas = json.load(f)
     
     for despesa in despesas:
-        if despesas['transacao'] == transacao_:
+        if despesa['transacao'] == transacao_:
             despesas.remove(despesa)
 
     with open(arquivo_despesas, 'w') as f:
@@ -398,6 +407,253 @@ def categoria_despesas():
 
     return categoria_
 
+def relatorio(opcao, usuario_id):
+    match opcao:
+        case '1':
+            with open(arquivo_receitas, 'r') as f:
+                receitas = json.load(f)
+            
+            existe_receita = False
+            valor_total = 0
+            valor_salario = 0
+            valor_investimento = 0
+            valor_outros = 0
+            for receita in receitas:
+                if (receita['id'] == usuario_id) and (receita['categoria'] == 'salario'):
+                    existe_receita = True
+                    valor_salario += receita['valor']
+                elif (receita['id'] == usuario_id) and (receita['categoria'] == 'investimento'):
+                    existe_receita = True
+                    valor_investimento += receita['valor']
+                elif (receita['id'] == usuario_id) and (receita['categoria'] == 'outros'):
+                    existe_receita = True
+                    valor_outros += receita['valor']
+        
+            if existe_receita == False:
+                print("\nReceitas não encontradas!")
+                input("Pressione [ENTER] para continuar")
+            
+            if existe_receita == True:
+                table = PrettyTable()
+                valor_total = valor_salario + valor_investimento + valor_outros
+                perc_salario = (valor_salario/valor_total) * 100
+                perc_investimento = (valor_investimento/valor_total) * 100
+                perc_outros = (valor_outros/valor_total) * 100
+                table.field_names = ["CATEGORIA", "TOTAL REGISTRADO POR CATEGORIA (R$)", "PERCENTUAL (%)"]
+                table.add_rows(
+                    [
+                        ["SALÁRIO", valor_salario, round(perc_salario, 2)],
+                        ["INVESTIMENTO", valor_investimento, round(perc_investimento, 2)],
+                        ["OUTROS", valor_outros, round(perc_outros, 2)],
+                    ]
+                )
+            return print(table)
+
+        case '2':
+            with open(arquivo_despesas, 'r') as f:
+                despesas = json.load(f)
+            
+            existe_despesa = False
+            valor_total = 0
+            valor_alimentacao = 0
+            valor_transporte = 0
+            valor_habitacao = 0
+            valor_educacao = 0
+            valor_lazer = 0
+            valor_outros = 0
+            for despesa in despesas:
+                if (despesa['id'] == usuario_id) and (despesa['categoria'] == 'alimentacao'):
+                    existe_despesa = True
+                    valor_alimentacao += despesa['valor']
+                elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'transporte/carro'):
+                    existe_despesa = True
+                    valor_transporte += despesa['valor']
+                elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'habitação/moradia'):
+                    existe_despesa = True
+                    valor_habitacao += despesa['valor']
+                elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'educação'):
+                    existe_despesa = True
+                    valor_educacao += despesa['valor']
+                elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'lazer'):
+                    existe_despesa = True
+                    valor_lazer += despesa['valor']
+                elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'outros'):
+                    existe_despesa = True
+                    valor_outros += despesa['valor']
+        
+            if existe_despesa == False:
+                print("\nDespesas não encontradas!")
+                input("Pressione [ENTER] para continuar")
+            
+            if existe_despesa == True:
+                table = PrettyTable()
+                valor_total = valor_alimentacao + valor_transporte + valor_habitacao + valor_educacao + valor_lazer + valor_outros
+                perc_alimentacao = (valor_alimentacao/valor_total) * 100
+                perc_transporte = (valor_transporte/valor_total) * 100
+                perc_habitacao = (valor_habitacao/valor_total) * 100
+                perc_educacao = (valor_educacao/valor_total) * 100
+                perc_lazer = (valor_lazer/valor_total) * 100
+                perc_outros = (valor_outros/valor_total) * 100
+                table.field_names = ["CATEGORIA", "TOTAL REGISTRADO POR CATEGORIA (R$)", "PERCENTUAL (%)"]
+                table.add_rows(
+                    [
+                        ["ALIMENTAÇÃO", valor_alimentacao, round(perc_alimentacao, 2)],
+                        ["TRANSPORTE/CARRO", valor_transporte, round(perc_transporte, 2)],
+                        ["HABITAÇÃO/MORADIA", valor_habitacao, round(perc_habitacao, 2)],
+                        ["EDUCAÇÃO", valor_educacao, round(perc_educacao, 2)],
+                        ["LAZER", valor_lazer, round(perc_lazer, 2)],
+                        ["OUTROS", valor_outros, round(perc_outros, 2)],
+                    ]
+                )
+            return print(table)
+
+def coletar_resposta(pergunta):
+    while True:
+        resposta = input(pergunta + " (a/b/c): ").strip().lower()
+        if resposta in ['a', 'b', 'c']:
+            return resposta
+        else:
+            print("Resposta inválida. Por favor, responda com 'a', 'b' ou 'c'.")
+
+def determinar_perfil():
+    print("Bem-vindo ao Questionário de Perfil Financeiro!\n")
+    
+    # Perguntas do questionário
+    perguntas = [
+        "1. O que você ganha por mês é o suficiente para arcar com seus custos?\n"
+        "a) Consigo pagar as minhas despesas e guardar mais 10% dos meus ganhos;\n"
+        "b) É suficiente, mas não consigo guardar nenhum valor de reserva;\n"
+        "c) Não. É necessário usar todo o meu dinheiro e ainda o limite do cheque especial, caso necessário ainda peço para amigos e parentes o valor emprestado para pagar os meus gastos.\n",
+
+        "2. Como você tem realizado o pagamento das suas despesas?\n"
+        "a) Pago em dia, à vista e, em alguns casos, com bons descontos;\n"
+        "b) Quase sempre pago em dia e à vista, mas quando realizo compras de alto valor, preciso fazer o parcelamento do pagamento.\n"
+        "c) Preciso sempre realizar o parcelamento das minhas despesas e utilizo linhas de crédito como cheque especial, cartão de crédito e crediário para isso.\n",
+
+        "3. Você possui alguma dívida em atraso?\n"
+        "a) Não possuo dívidas.\n"
+        "b) Tenho algumas dívidas, mas nenhuma se encontra em atraso;\n"
+        "c) Possuo dívidas em atraso e não sei exatamente quais são.\n",
+
+        "4. O seu orçamento financeiro é realizado periodicamente?\n"
+        "a) Faço o orçamento de maneira periódica e comparo o orçado com o realizado;\n"
+        "b) Somente registro o realizado de forma periódica, sem analisar os gastos obtidos;\n"
+        "c) Não faço o meu orçamento financeiro.\n",
+
+        "5. Você consegue fazer algum tipo de investimento?\n"
+        "a) Utilizo mais de 10% do meu ganho em linhas de investimentos, que variam de acordo com os meus sonhos;\n"
+        "b) Quando sobra dinheiro, invisto, normalmente, na poupança;\n"
+        "c) Nunca sobra dinheiro para realizar investimentos.\n",
+
+        "6. Como você planeja a sua aposentadoria?\n"
+        "a) Tenho planos alternativos de previdência privada para garantir a minha segurança financeira, bem como minha contribuição para a previdência social;\n"
+        "b) Contribuo para a previdência social. Sei que preciso de reserva extra, mas não consigo realizar este tipo de investimento atualmente;\n"
+        "c) Não contribuo para a previdência social e nem para a privada.\n",
+
+        "7. O que você entende sobre ser Independente Financeiramente?\n"
+        "a) Que posso trabalhar por prazer e não por necessidade;\n"
+        "b) Que posso ter dinheiro para viver de forma confortável com a minha família;\n"
+        "c) Que posso curtir a vida intensamente sem me preocupar com os gastos futuros.\n",
+
+        "8. Você sabe quais são os seus sonhos e objetivos de curto, médio e longo prazos?\n"
+        "a) Sei quais são, quanto vão me custar e por quanto tempo terei que poupar para alcançar meus objetivos;\n"
+        "b) Tenho muitos sonhos e sei quanto custam, mas não sei ainda como realizá-los;\n"
+        "c) Não tenho sonhos ou, se tenho, sempre acabo deixando-os para o futuro, porque não consigo guardar dinheiro suficiente para realizá-los.\n",
+
+        "9. Quando você decide fazer uma compra, é realizada a pesquisa de preços de forma antecipada?\n"
+        "a) Sempre pesquiso antes de efetuar uma compra;\n"
+        "b) Quase sempre pesquiso;\n"
+        "c) Compro um produto que gosto independente de realizar pesquisa de valor.\n",
+
+        "10. Antes de fazer uma nova prestação, você soma as que já precisa pagar no fim do mês?\n"
+        "a) Não realizo compras em prestação;\n"
+        "b) Sempre somo os valores antes de finalizar uma nova prestação;\n"
+        "c) Verifico sempre se ainda possuo limite no cartão;\n",
+
+        "11. Se um imprevisto alterasse a sua situação financeira, qual seria a sua reação?\n"
+        "a) Faria um bom diagnóstico financeiro, registrando o que ganho e o que gasto, além dos meus investimentos e dívidas, se os tiverem;\n"
+        "b) Cortaria despesas e gastos desnecessários para amenizar os baques causados pelo imprevisto;\n"
+        "c) Não saberia por onde começar e teria medo de encarar a minha verdadeira situação financeira.\n",
+
+        "12. Se a partir de hoje você não recebesse mais seu ganho, por quanto tempo você conseguiria manter seu atual padrão de vida?\n"
+        "a) Conseguiria fazer tudo que faço por 5, 10 ou mais anos;\n"
+        "b) Manteria meu padrão de vida por 1 a, no máximo, 4 anos;\n"
+        "c) Não conseguiria me manter nem por alguns meses.\n",
+
+        "13. Quando você decide comprar um produto, qual é a sua atitude?\n"
+        "a) Planejo uma forma de investimento para compra;\n"
+        "b) Parcelo dentro do meu orçamento;\n"
+        "c) Compro e depois vejo como vou conseguir pagar.\n"
+    ]
+
+    # Inicializa a pontuação
+    pontuacao = 0
+
+    # Coleta as respostas do usuário
+    for pergunta in perguntas:
+        resposta = coletar_resposta(pergunta)
+        
+        if resposta == 'a':
+            pontuacao += 10
+        elif resposta == 'b':
+            pontuacao += 5
+        elif resposta == 'c':
+            pontuacao += 0
+
+    # Determina o perfil com base na pontuação
+    if pontuacao >= 95:
+        perfil = "Investidor"
+    elif 65 <= pontuacao <= 90:
+        perfil = "Equilibrado Financeiramente"
+    elif 20 <= pontuacao <= 60:
+        perfil = "Endividado"
+    elif pontuacao <= 15:
+        perfil = "Superendividado"
+    else:
+        perfil = "Perfil indefinido"
+
+    return perfil
+
+def exibir_mensagem_perfil(perfil):
+    if perfil == "Investidor":
+        mensagem = (
+            "Você sabe exatamente onde está sendo utilizado o seu dinheiro e as principais possibilidades de investimento "
+            "e segurança para caso ocorra algum imprevisto, mantendo sua saúde financeira. Ser financeiramente consciente "
+            "não é uma tarefa fácil, exigindo disciplina e força de vontade para mudar de vida. Nunca se esqueça de que proteger "
+            "e poupar o seu dinheiro é uma forma de realizar seus sonhos. Planeje seus sonhos de curto, médio e longo prazo para "
+            "facilitar a busca por seus objetivos e tenha cuidado ao realizar investimentos, buscando sempre fontes confiáveis "
+            "para garantir que seu dinheiro esteja em boas mãos."
+        )
+    elif perfil == "Equilibrado Financeiramente":
+        mensagem = (
+            "Sua vida financeira está em um bom nível de estabilidade, mas a ausência ou o controle de dívidas não pode se tornar "
+            "um hábito. Você ainda não consolidou o costume de poupar ou investir dinheiro para obter lucros futuros. Seu equilíbrio "
+            "de gastos pode desestabilizar-se com surpresas no futuro. Realize um diagnóstico financeiro junto com sua família, "
+            "registrando todas as despesas e receitas para traçar metas a curto, médio e longo prazo, visando cumprir seus sonhos "
+            "de acordo com o tempo e o custo de cada objetivo."
+        )
+    elif perfil == "Endividado":
+        mensagem = (
+            "Seu padrão financeiro saiu um pouco dos eixos, mas isso nem sempre significa um problema. Você precisa traçar um "
+            "diagnóstico para saber em qual momento a sua situação financeira deu um deslize. O Minhaeiro pode te ajudar a registrar "
+            "todas as despesas e receitas para visualizar oportunidades de redução de gastos e equilibrar suas finanças. Foque em "
+            "aprender sobre educação financeira e entender suas alternativas para definir um plano de ação. Mantenha a calma, não "
+            "se desanime, e mantenha o foco para passar pelos desafios com maturidade."
+        )
+    elif perfil == "Superendividado":
+        mensagem = (
+            "Este é um momento para ter calma! Apesar da sua situação atual, você acaba de encontrar uma oportunidade de recomeço. "
+            "Não se culpe, mas tente entender as causas do superendividamento. Seja transparente com sua família sobre sua situação "
+            "financeira e faça um diagnóstico para entender a gravidade do problema. Após esse período inicial, definam sonhos a curto, "
+            "médio e longo prazo visando a saúde financeira da família. Lembre-se: ninguém nasceu endividado ou investidor; todos nós "
+            "podemos operar mudanças significativas em nossas vidas, e o segredo para isso está na educação financeira."
+        )
+    else:
+        mensagem = "Perfil não reconhecido. Por favor, selecione um perfil válido."
+
+    print(f"\nSeu perfil financeiro é: {perfil}\n")
+    print(mensagem)
+
 #Menu inicial do sistema
 def menu_inicial():
     print (cor.CIANO + "=" *55 + cor.RESET)
@@ -424,7 +680,8 @@ def modulo_usario():
     print("1. LISTAR DADOS DO USUÁRIO")
     print("2. MODIFICAR DADOS DO USUÁRIO")
     print("3. EXCLUIR USUÁRIO")
-    print("4. VOLTAR AO MENU ANTERIOR")
+    print("4. DESCOBRIR PERFIL FINANCEIRO")
+    print("5. VOLTAR AO MENU ANTERIOR")
     print (cor.CIANO + "=" *55 + cor.RESET)
 
 def modulo_receitas():
@@ -449,13 +706,10 @@ def modulo_despesas():
 
 def modulo_relatório():
     print (cor.CIANO + "=" *55 + cor.RESET)
-    print (cor.VERDE + " ---->>> MÓDULO DO USUÁRIO <<<---- ")
-    print("1. ADICIONAR DESPESA")
-    print("2. LISTAR DESPESA")
-    print("3. ATUALIZAR DESPESA")
-    print("4. EXCLUIR DESPESA")
-    print("5. LISTAR DESPESAS DE UM USUARIO")
-    print("6. VOLTAR AO MENU ANTERIOR")
+    print (cor.VERDE + " ---->>> MÓDULO DO RELATÓRIOS <<<---- ")
+    print("1. RELATÓRIOS DE RECEITAS")
+    print("2. RELATÓRIOS DE DESPESAS")
+    print("3. VOLTAR AO MENU ANTERIOR")
     print (cor.CIANO + "=" *55 + cor.RESET)
 
 def main():
@@ -492,6 +746,9 @@ def main():
                             apagar_receitas_despesas(id_usuario)
                             excluir_usuario(id_usuario)
                         elif opcao_modulo_usuario == '4':
+                            perfil_ = determinar_perfil()
+                            exibir_mensagem_perfil(perfil_)
+                        elif opcao_modulo_usuario == '5':
                             print("\nVoltando ao menu anterior!")
                             sleep(3)
                             limpar_tela()
@@ -576,6 +833,12 @@ def main():
                     elif opcao_modulo == '4':
                         modulo_relatório()
                         opcao_modulo_relatorio = input("Escolha uma opção: ")
+
+                        if opcao_modulo_relatorio == '1':
+                            relatorio(opcao_modulo_relatorio, id_usuario)
+                        elif opcao_modulo_relatorio == '2':
+                            relatorio(opcao_modulo_relatorio, id_usuario)
+
                     elif opcao_modulo == '5':
                         input("Digite [ENTER] para retornar ao menu anterior.")
                         break
