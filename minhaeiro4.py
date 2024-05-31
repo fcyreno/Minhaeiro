@@ -178,44 +178,49 @@ def adicionar_receita(usuario_id, valor_, data_, categoria_receitas_, descricao_
 
 #Lista as receitas do usuário logado
 def listar_receitas(usuario_id):
-    with open(arquivo_receitas, 'r') as f:
-            receitas = json.load(f)
- 
-    contador = 0
-    table = PrettyTable()
-    tabela = []
-
-    for receita in receitas:
-        if receita['id'] == usuario_id:
-            contador += 1
-            receita_ = [receita['transacao'], receita['valor'], receita['data'], receita['categoria'], receita['descricao']]
-            tabela.append(receita_)
-        
-    if contador == 0:
-        print("\nReceitas não encontradas!")
-    else:
-        table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [AAAA-MM-DD]", "CATEGORIA", "DESCRIÇÃO"]
-        for elemento in tabela:
-            table.add_row(elemento)
+    try:
+        with open(arquivo_receitas, 'r') as f:
+                receitas = json.load(f)
     
-    print(table)
+        contador = 0
+        table = PrettyTable()
+        tabela = []
+
+        for receita in receitas:
+            if receita['id'] == usuario_id:
+                contador += 1
+                receita_ = [receita['transacao'], receita['valor'], receita['data'], receita['categoria'], receita['descricao']]
+                tabela.append(receita_)
+            
+        if contador == 0:
+            print("\nReceitas não encontradas!")
+        else:
+            table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [AAAA-MM-DD]", "CATEGORIA", "DESCRIÇÃO"]
+            for elemento in tabela:
+                table.add_row(elemento)
+            print(table)
+    except FileNotFoundError:
+        print("\nArquivo com Receitas não encontrado!")
     
 def alterar_receitas(transacao_, novo_valor, nova_data, nova_categoria, nova_descricao):
-    with open(arquivo_receitas, 'r') as f:
-            receitas = json.load(f)
+    try:
+        with open(arquivo_receitas, 'r') as f:
+                receitas = json.load(f)
 
-    for receita in receitas:
-        if receita['transacao'] == transacao_:
-            receita['valor'] = novo_valor
-            receita['data'] = nova_data
-            receita['categoria'] = nova_categoria
-            receita['descricao'] = nova_descricao
-            break
-    
-    with open(arquivo_receitas, 'w') as f:
-        json.dump(receitas, f, indent=4)
-    print("\nReceita atualizado com sucesso!")
-    input("\nTecle [ENTER] para prosseguir") 
+        for receita in receitas:
+            if receita['transacao'] == transacao_:
+                receita['valor'] = novo_valor
+                receita['data'] = nova_data
+                receita['categoria'] = nova_categoria
+                receita['descricao'] = nova_descricao
+                break
+        
+        with open(arquivo_receitas, 'w') as f:
+            json.dump(receitas, f, indent=4)
+        print("\nReceita atualizado com sucesso!")
+        input("\nTecle [ENTER] para prosseguir")
+    except FileNotFoundError:
+        print("\nArquivo com Receitas não encontrado!")
 
 def excluir_receita(transacao_):
     with open(arquivo_receitas, 'r') as f:
@@ -280,8 +285,7 @@ def listar_despesas(usuario_id):
         table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [AAAA-MM-DD]", "CATEGORIA", "DESCRIÇÃO"]
         for elemento in tabela:
             table.add_row(elemento)
-    
-    print(table)
+        print(table)
 
 def alterar_despesas(transacao_, novo_valor, nova_data, nova_categoria, nova_descricao):
     with open(arquivo_despesas, 'r') as f:
@@ -410,102 +414,108 @@ def categoria_despesas():
 def relatorio(opcao, usuario_id):
     match opcao:
         case '1':
-            with open(arquivo_receitas, 'r') as f:
-                receitas = json.load(f)
+            try:
+                with open(arquivo_receitas, 'r') as f:
+                    receitas = json.load(f)
+                
+                existe_receita = False
+                valor_total = 0
+                valor_salario = 0
+                valor_investimento = 0
+                valor_outros = 0
+                for receita in receitas:
+                    if (receita['id'] == usuario_id) and (receita['categoria'] == 'salario'):
+                        existe_receita = True
+                        valor_salario += receita['valor']
+                    elif (receita['id'] == usuario_id) and (receita['categoria'] == 'investimento'):
+                        existe_receita = True
+                        valor_investimento += receita['valor']
+                    elif (receita['id'] == usuario_id) and (receita['categoria'] == 'outros'):
+                        existe_receita = True
+                        valor_outros += receita['valor']
             
-            existe_receita = False
-            valor_total = 0
-            valor_salario = 0
-            valor_investimento = 0
-            valor_outros = 0
-            for receita in receitas:
-                if (receita['id'] == usuario_id) and (receita['categoria'] == 'salario'):
-                    existe_receita = True
-                    valor_salario += receita['valor']
-                elif (receita['id'] == usuario_id) and (receita['categoria'] == 'investimento'):
-                    existe_receita = True
-                    valor_investimento += receita['valor']
-                elif (receita['id'] == usuario_id) and (receita['categoria'] == 'outros'):
-                    existe_receita = True
-                    valor_outros += receita['valor']
-        
-            if existe_receita == False:
-                print("\nReceitas não encontradas!")
-                input("Pressione [ENTER] para continuar")
-            
-            if existe_receita == True:
-                table = PrettyTable()
-                valor_total = valor_salario + valor_investimento + valor_outros
-                perc_salario = (valor_salario/valor_total) * 100
-                perc_investimento = (valor_investimento/valor_total) * 100
-                perc_outros = (valor_outros/valor_total) * 100
-                table.field_names = ["CATEGORIA", "TOTAL REGISTRADO POR CATEGORIA (R$)", "PERCENTUAL (%)"]
-                table.add_rows(
-                    [
-                        ["SALÁRIO", valor_salario, round(perc_salario, 2)],
-                        ["INVESTIMENTO", valor_investimento, round(perc_investimento, 2)],
-                        ["OUTROS", valor_outros, round(perc_outros, 2)],
-                    ]
-                )
-            return print(table)
+                if existe_receita == False:
+                    print("\nReceitas não encontradas!")
+                    input("Pressione [ENTER] para continuar")
+                
+                if existe_receita == True:
+                    table = PrettyTable()
+                    valor_total = valor_salario + valor_investimento + valor_outros
+                    perc_salario = (valor_salario/valor_total) * 100
+                    perc_investimento = (valor_investimento/valor_total) * 100
+                    perc_outros = (valor_outros/valor_total) * 100
+                    table.field_names = ["CATEGORIA", "TOTAL REGISTRADO POR CATEGORIA (R$)", "PERCENTUAL (%)"]
+                    table.add_rows(
+                        [
+                            ["SALÁRIO", valor_salario, round(perc_salario, 2)],
+                            ["INVESTIMENTO", valor_investimento, round(perc_investimento, 2)],
+                            ["OUTROS", valor_outros, round(perc_outros, 2)],
+                        ]
+                    )
+                return print(table)
+            except FileNotFoundError:
+                print("\nArquivo com as Receitas dos usuários não encontrado!")
 
         case '2':
-            with open(arquivo_despesas, 'r') as f:
-                despesas = json.load(f)
+            try:
+                with open(arquivo_despesas, 'r') as f:
+                    despesas = json.load(f)
+                
+                existe_despesa = False
+                valor_total = 0
+                valor_alimentacao = 0
+                valor_transporte = 0
+                valor_habitacao = 0
+                valor_educacao = 0
+                valor_lazer = 0
+                valor_outros = 0
+                for despesa in despesas:
+                    if (despesa['id'] == usuario_id) and (despesa['categoria'] == 'alimentacao'):
+                        existe_despesa = True
+                        valor_alimentacao += despesa['valor']
+                    elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'transporte/carro'):
+                        existe_despesa = True
+                        valor_transporte += despesa['valor']
+                    elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'habitação/moradia'):
+                        existe_despesa = True
+                        valor_habitacao += despesa['valor']
+                    elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'educação'):
+                        existe_despesa = True
+                        valor_educacao += despesa['valor']
+                    elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'lazer'):
+                        existe_despesa = True
+                        valor_lazer += despesa['valor']
+                    elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'outros'):
+                        existe_despesa = True
+                        valor_outros += despesa['valor']
             
-            existe_despesa = False
-            valor_total = 0
-            valor_alimentacao = 0
-            valor_transporte = 0
-            valor_habitacao = 0
-            valor_educacao = 0
-            valor_lazer = 0
-            valor_outros = 0
-            for despesa in despesas:
-                if (despesa['id'] == usuario_id) and (despesa['categoria'] == 'alimentacao'):
-                    existe_despesa = True
-                    valor_alimentacao += despesa['valor']
-                elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'transporte/carro'):
-                    existe_despesa = True
-                    valor_transporte += despesa['valor']
-                elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'habitação/moradia'):
-                    existe_despesa = True
-                    valor_habitacao += despesa['valor']
-                elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'educação'):
-                    existe_despesa = True
-                    valor_educacao += despesa['valor']
-                elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'lazer'):
-                    existe_despesa = True
-                    valor_lazer += despesa['valor']
-                elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'outros'):
-                    existe_despesa = True
-                    valor_outros += despesa['valor']
-        
-            if existe_despesa == False:
-                print("\nDespesas não encontradas!")
-                input("Pressione [ENTER] para continuar")
-            
-            if existe_despesa == True:
-                table = PrettyTable()
-                valor_total = valor_alimentacao + valor_transporte + valor_habitacao + valor_educacao + valor_lazer + valor_outros
-                perc_alimentacao = (valor_alimentacao/valor_total) * 100
-                perc_transporte = (valor_transporte/valor_total) * 100
-                perc_habitacao = (valor_habitacao/valor_total) * 100
-                perc_educacao = (valor_educacao/valor_total) * 100
-                perc_lazer = (valor_lazer/valor_total) * 100
-                perc_outros = (valor_outros/valor_total) * 100
-                table.field_names = ["CATEGORIA", "TOTAL REGISTRADO POR CATEGORIA (R$)", "PERCENTUAL (%)"]
-                table.add_rows(
-                    [
-                        ["ALIMENTAÇÃO", valor_alimentacao, round(perc_alimentacao, 2)],
-                        ["TRANSPORTE/CARRO", valor_transporte, round(perc_transporte, 2)],
-                        ["HABITAÇÃO/MORADIA", valor_habitacao, round(perc_habitacao, 2)],
-                        ["EDUCAÇÃO", valor_educacao, round(perc_educacao, 2)],
-                        ["LAZER", valor_lazer, round(perc_lazer, 2)],
-                        ["OUTROS", valor_outros, round(perc_outros, 2)],
-                    ]
-                )
-            return print(table)
+                if existe_despesa == False:
+                    print("\nDespesas não encontradas!")
+                    input("Pressione [ENTER] para continuar")
+                
+                if existe_despesa == True:
+                    table = PrettyTable()
+                    valor_total = valor_alimentacao + valor_transporte + valor_habitacao + valor_educacao + valor_lazer + valor_outros
+                    perc_alimentacao = (valor_alimentacao/valor_total) * 100
+                    perc_transporte = (valor_transporte/valor_total) * 100
+                    perc_habitacao = (valor_habitacao/valor_total) * 100
+                    perc_educacao = (valor_educacao/valor_total) * 100
+                    perc_lazer = (valor_lazer/valor_total) * 100
+                    perc_outros = (valor_outros/valor_total) * 100
+                    table.field_names = ["CATEGORIA", "TOTAL REGISTRADO POR CATEGORIA (R$)", "PERCENTUAL (%)"]
+                    table.add_rows(
+                        [
+                            ["ALIMENTAÇÃO", valor_alimentacao, round(perc_alimentacao, 2)],
+                            ["TRANSPORTE/CARRO", valor_transporte, round(perc_transporte, 2)],
+                            ["HABITAÇÃO/MORADIA", valor_habitacao, round(perc_habitacao, 2)],
+                            ["EDUCAÇÃO", valor_educacao, round(perc_educacao, 2)],
+                            ["LAZER", valor_lazer, round(perc_lazer, 2)],
+                            ["OUTROS", valor_outros, round(perc_outros, 2)],
+                        ]
+                    )
+                return print(table)
+            except FileNotFoundError:
+                print("\nArquivo com as Despesas dos usuários não encontrado!")
 
 def coletar_resposta(pergunta):
     while True:
