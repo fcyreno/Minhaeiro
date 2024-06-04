@@ -1,4 +1,4 @@
-#Declaração das bibliotecas
+# Declaração das bibliotecas
 import os
 import json
 from datetime import datetime
@@ -7,7 +7,7 @@ import random
 from prettytable import PrettyTable
 
 
-#Classe para manipular a cor dos caracteres
+# Classe para manipular a cor dos caracteres
 class cor:
     VERMELHO = '\033[91m'
     VERDE = '\033[92m'
@@ -17,30 +17,33 @@ class cor:
     CIANO = '\033[96m'
     RESET = '\033[0m'
 
-#Definindo os arquivos JSON para armazenamento dos dados
-arquivo_usuarios = os.path.join(os.path.dirname(__file__), 'usuarios.json') #Arquivo com os dados dos usuários
-arquivo_receitas = os.path.join(os.path.dirname(__file__), 'receitas.json') #Arquivo com todas as receitas cadastradas
-arquivo_despesas = os.path.join(os.path.dirname(__file__), 'despesas.json') #Arquivo com todas as despesas cadastradas
 
-#Limpa tela
+# Definindo os arquivos JSON para armazenamento dos dados
+arquivo_usuarios = os.path.join(os.path.dirname(__file__), 'usuarios.json')  # Arquivo com os dados dos usuários
+arquivo_receitas = os.path.join(os.path.dirname(__file__), 'receitas.json')  # Arquivo com todas as receitas cadastradas
+arquivo_despesas = os.path.join(os.path.dirname(__file__), 'despesas.json')  # Arquivo com todas as despesas cadastradas
+
+
+# Limpa tela
 def limpar_tela():
-    #Verifica o sistema operacional para executar o comando de limpeza de tela correto
-    if os.name == 'nt':  #Para sistemas Windows
+    # Verifica o sistema operacional para executar o comando de limpeza de tela correto
+    if os.name == 'nt':  # Para sistemas Windows
         os.system('cls')
-    else:  #Para sistemas Unix/Linux/MacOS
+    else:  # Para sistemas Unix/Linux/MacOS
         os.system('clear')
 
-#Logar com um usuário cadastrado
+
+# Logar com um usuário cadastrado
 def logar_usuario(email, senha):
-    #Declaração de variáveis globais para utilização fora da função logar_usuario()
-    global id_usuario, usuario_logado 
-    
-    #Carregando os dados dos usuários cadastrados
+    # Declaração de variáveis globais para utilização fora da função logar_usuario()
+    global id_usuario, usuario_logado
+
+    # Carregando os dados dos usuários cadastrados
     try:
         with open(arquivo_usuarios, 'r') as f:
             usuarios = json.load(f)
-            arquivo = True #Existe arquivo com os dados do usuário
-    #Caso arquivo com dados dos usuários não seja encontrado
+            arquivo = True  # Existe arquivo com os dados do usuário
+    # Caso arquivo com dados dos usuários não seja encontrado
     except FileNotFoundError:
         arquivo = False
         print("Arquivo de usuários não encontrado!")
@@ -48,14 +51,14 @@ def logar_usuario(email, senha):
         input("\nPressione [ENTER] para retornar ao menu inicial.")
         limpar_tela()
         menu_inicial()
-    
-    #Processo de log-in de usuário
-    usuario_logado = False #Inicializa usuario_logado como False
+
+    # Processo de log-in de usuário
+    usuario_logado = False  # Inicializa usuario_logado como False
     if arquivo == True:
         for usuario in usuarios:
             if (usuario['email'] == email) and (usuario['senha'] == senha):
                 id_usuario = usuario['id']
-                usuario_logado = True #Usuario_logado só passa a ser True se log-in e senha forem encontrados na lista de usuários
+                usuario_logado = True  # Usuario_logado só passa a ser True se log-in e senha forem encontrados na lista de usuários
                 print(f"\nUsuário {usuario['nome']} logado no sistema!")
                 input("\nPressione [ENTER] para continuar.")
         if usuario_logado == False:
@@ -63,37 +66,39 @@ def logar_usuario(email, senha):
             input("\nPressione [ENTER] para retornar ao menu inicial.")
             limpar_tela()
 
-#Criar/cadastrar um usuário
+
+# Criar/cadastrar um usuário
 def criar_usuario(nome, email, idade, senha):
-    #Carrega os dados dos usuários cadastrados
+    # Carrega os dados dos usuários cadastrados
     try:
         with open(arquivo_usuarios, 'r') as f:
             usuarios = json.load(f)
             existe_arquivo = True
-    #Caso o arquivo com os dados dos usuários não seja encontrado (primeira execução do programa)
+    # Caso o arquivo com os dados dos usuários não seja encontrado (primeira execução do programa)
     except FileNotFoundError:
-        usuarios = [] #É criada uma lista de usuários vazia
-        existe_arquivo = False #Existência de arquivo é setado como False
+        usuarios = []  # É criada uma lista de usuários vazia
+        existe_arquivo = False  # Existência de arquivo é setado como False
 
-    #Definindo o id do usuário (número aleatório)
+    # Definindo o id do usuário (número aleatório)
     hora_atual = datetime.now()
     segundo = hora_atual.second
     numero_aleatorio = random.randint(1, 1000)
     id_usuario_ = segundo * numero_aleatorio
-    
-    #Inicializando o dicionário que irá receber os dados do usuário
-    dic_usuario = {"id": id_usuario_, "nome": nome, "idade": idade, "senha": senha, "email": email}
-    usuarios.append(dic_usuario) #Inserindo os dados do usuário no arquivo de lista de usuários
 
-    #Inserindo os dados do usuário no arquivo JSON
-    if existe_arquivo == True: #Caso exista arquivo de usuários
+    # Inicializando o dicionário que irá receber os dados do usuário
+    dic_usuario = {"id": id_usuario_, "nome": nome, "idade": idade, "senha": senha, "email": email}
+    usuarios.append(dic_usuario)  # Inserindo os dados do usuário no arquivo de lista de usuários
+
+    # Inserindo os dados do usuário no arquivo JSON
+    if existe_arquivo == True:  # Caso exista arquivo de usuários
         with open(arquivo_usuarios, 'w') as f:
             json.dump(usuarios, f, indent=4)
-    else: #Caso não exista arquivo de usuários (primeira execução do programa)
+    else:  # Caso não exista arquivo de usuários (primeira execução do programa)
         with open(arquivo_usuarios, 'x') as f:
             json.dump(usuarios, f, indent=4)
-        
-#Lista os dados do usuário logado
+
+
+# Lista os dados do usuário logado
 def listar_dados_usuario(usuario_id):
     with open(arquivo_usuarios, 'r') as f:
         usuarios = json.load(f)
@@ -108,11 +113,12 @@ def listar_dados_usuario(usuario_id):
             input("Digite [ENTER] para prosseguir")
             break
 
-#Modifica os dados do usuário logado
+
+# Modifica os dados do usuário logado
 def modificar_dados_usuario(usuario_id, novo_nome, nova_idade, novo_email, nova_senha):
     with open(arquivo_usuarios, 'r') as f:
         usuarios = json.load(f)
-    
+
     for usuario in usuarios:
         if usuario['id'] == usuario_id:
             usuario['nome'] = novo_nome
@@ -127,61 +133,83 @@ def modificar_dados_usuario(usuario_id, novo_nome, nova_idade, novo_email, nova_
     print("\nUsuário atualizado com sucesso!")
     input("\nTecle [ENTER] para prosseguir")
 
-#Exclui o usuário logado
+
+# Exclui o usuário logado
 def excluir_usuario(usuario_id):
     global id_usuario, usuario_logado
 
     with open(arquivo_usuarios, 'r') as f:
         usuarios = json.load(f)
-    
+
     for usuario in usuarios:
         if usuario['id'] == usuario_id:
             usuarios.remove(usuario)
 
     with open(arquivo_usuarios, 'w') as f:
         json.dump(usuarios, f, indent=4)
-    
+
     print("\nUsuário excluído com sucesso!")
     id_usuario = None
     usuario_logado = False
     input("\nTecle [ENTER] para prosseguir")
 
-#Adicionar receita do usuário logado
+
+# Adicionar receita do usuário logado
 def adicionar_receita(usuario_id, valor_, data_, categoria_receitas_, descricao_receitas_):
-    #Carrega os dados de receitas cadastradas
+    # Carrega os dados de receitas cadastradas
     try:
         with open(arquivo_receitas, 'r') as f:
             receitas = json.load(f)
             existe_arquivo = True
-    #Caso o arquivo com as receitas não seja encontrado (primeira execução do programa)
+    # Caso o arquivo com as receitas não seja encontrado (primeira execução do programa)
     except FileNotFoundError:
-        receitas = [] #É criada uma lista de receitas vazia
-        existe_arquivo = False #Existência de arquivo é setado como False
-    
-    #Definindo o número da transação de forma aleatória
+        receitas = []  # É criada uma lista de receitas vazia
+        existe_arquivo = False  # Existência de arquivo é setado como False
+
+    # Definindo o número da transação de forma aleatória
     hora_atual = datetime.now()
     segundo = hora_atual.second
     numero_aleatorio = random.randint(1, 1000)
     transacao_ = segundo * numero_aleatorio
-    
-    #Inicializando o dicionário que irá receber os dados de receitas
-    dic_receitas = {"transacao": transacao_, "id": usuario_id, "valor": valor_, "data": data_, "categoria": categoria_receitas_, "descricao": descricao_receitas_}
-    receitas.append(dic_receitas) #Inserindo os dados de receitas no arquivo de lista de receitas
 
-    #Inserindo os dados de receitas no arquivo JSON
-    if existe_arquivo == True: #Caso exista arquivo de receitas
+    # Inicializando o dicionário que irá receber os dados de receitas
+    dic_receitas = {"transacao": transacao_, "id": usuario_id, "valor": valor_, "data": data_,
+                    "categoria": categoria_receitas_, "descricao": descricao_receitas_}
+    receitas.append(dic_receitas)  # Inserindo os dados de receitas no arquivo de lista de receitas
+
+    # Inserindo os dados de receitas no arquivo JSON
+    if existe_arquivo == True:  # Caso exista arquivo de receitas
         with open(arquivo_receitas, 'w') as f:
             json.dump(receitas, f, indent=4)
-    else: #Caso não exista arquivo de receitas (primeira execução do programa)
+    else:  # Caso não exista arquivo de receitas (primeira execução do programa)
         with open(arquivo_receitas, 'x') as f:
             json.dump(receitas, f, indent=4)
 
-#Lista as receitas do usuário logado
+
+# Verifica se o numero da receita existe
+
+def verificar_receita(transacao):
+    global dummy
+    dummy = False
+    try:
+        with open(arquivo_receitas, 'r') as f:
+            receitas = json.load(f)
+
+
+        for receita in receitas:
+            if receita['transacao'] == transacao:
+                dummy = True
+    except FileNotFoundError:
+        print("\nArquivo com Receitas não encontrado!")
+    return dummy
+
+# Lista as receitas do usuário logado
 def listar_receitas(usuario_id):
     try:
         with open(arquivo_receitas, 'r') as f:
-                receitas = json.load(f)
-    
+            receitas = json.load(f)
+
+        global contador
         contador = 0
         table = PrettyTable()
         tabela = []
@@ -189,11 +217,13 @@ def listar_receitas(usuario_id):
         for receita in receitas:
             if receita['id'] == usuario_id:
                 contador += 1
-                receita_ = [receita['transacao'], receita['valor'], receita['data'], receita['categoria'], receita['descricao']]
+                receita_ = [receita['transacao'], receita['valor'], receita['data'], receita['categoria'],
+                            receita['descricao']]
                 tabela.append(receita_)
-            
+
         if contador == 0:
             print("\nReceitas não encontradas!")
+            return contador
         else:
             table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [AAAA-MM-DD]", "CATEGORIA", "DESCRIÇÃO"]
             for elemento in tabela:
@@ -201,11 +231,12 @@ def listar_receitas(usuario_id):
             print(table)
     except FileNotFoundError:
         print("\nArquivo com Receitas não encontrado!")
-    
+
+
 def alterar_receitas(transacao_, novo_valor, nova_data, nova_categoria, nova_descricao):
     try:
         with open(arquivo_receitas, 'r') as f:
-                receitas = json.load(f)
+            receitas = json.load(f)
 
         for receita in receitas:
             if receita['transacao'] == transacao_:
@@ -214,7 +245,7 @@ def alterar_receitas(transacao_, novo_valor, nova_data, nova_categoria, nova_des
                 receita['categoria'] = nova_categoria
                 receita['descricao'] = nova_descricao
                 break
-        
+
         with open(arquivo_receitas, 'w') as f:
             json.dump(receitas, f, indent=4)
         print("\nReceita atualizado com sucesso!")
@@ -222,53 +253,79 @@ def alterar_receitas(transacao_, novo_valor, nova_data, nova_categoria, nova_des
     except FileNotFoundError:
         print("\nArquivo com Receitas não encontrado!")
 
+
 def excluir_receita(transacao_):
+    global contador
+    contador = 0
     with open(arquivo_receitas, 'r') as f:
         receitas = json.load(f)
-    
+
     for receita in receitas:
         if receita['transacao'] == transacao_:
             receitas.remove(receita)
+            print("\nReceita excluído com sucesso!")
+            contador = 1
+
+    if(contador == 0):
+        print("Por favor, digite uma transação valida!")
 
     with open(arquivo_receitas, 'w') as f:
         json.dump(receitas, f, indent=4)
 
-    print("\nReceita excluído com sucesso!")
+
     input("\nTecle [ENTER] para prosseguir")
 
+
 def adicionar_despesa(usuario_id, valor_, data_, categoria_despesas_, descricao_despesas_):
-    #Carrega os dados de despesas cadastradas
+    # Carrega os dados de despesas cadastradas
     try:
         with open(arquivo_despesas, 'r') as f:
             despesas = json.load(f)
             existe_arquivo = True
-    #Caso o arquivo com as despesas não seja encontrado (primeira execução do programa)
+    # Caso o arquivo com as despesas não seja encontrado (primeira execução do programa)
     except FileNotFoundError:
-        despesas = [] #É criada uma lista de despesas vazia
-        existe_arquivo = False #Existência de arquivo é setado como False
-    
-    #Definindo o número da transação de forma aleatória
+        despesas = []  # É criada uma lista de despesas vazia
+        existe_arquivo = False  # Existência de arquivo é setado como False
+
+    # Definindo o número da transação de forma aleatória
     hora_atual = datetime.now()
     segundo = hora_atual.second
     numero_aleatorio = random.randint(1, 1000)
     transacao_ = segundo * numero_aleatorio
-    
-    #Inicializando o dicionário que irá receber os dados de despesas
-    dic_despesas = {"transacao": transacao_, "id": usuario_id, "valor": valor_, "data": data_, "categoria": categoria_despesas_, "descricao": descricao_despesas_}
-    despesas.append(dic_despesas) #Inserindo os dados de receitas no arquivo de lista de receitas
 
-    #Inserindo os dados de despesas no arquivo JSON
-    if existe_arquivo == True: #Caso exista arquivo de despesas
+    # Inicializando o dicionário que irá receber os dados de despesas
+    dic_despesas = {"transacao": transacao_, "id": usuario_id, "valor": valor_, "data": data_,
+                    "categoria": categoria_despesas_, "descricao": descricao_despesas_}
+    despesas.append(dic_despesas)  # Inserindo os dados de receitas no arquivo de lista de receitas
+
+    # Inserindo os dados de despesas no arquivo JSON
+    if existe_arquivo == True:  # Caso exista arquivo de despesas
         with open(arquivo_despesas, 'w') as f:
             json.dump(despesas, f, indent=4)
-    else: #Caso não exista arquivo de despesas (primeira execução do programa)
+    else:  # Caso não exista arquivo de despesas (primeira execução do programa)
         with open(arquivo_despesas, 'x') as f:
             json.dump(despesas, f, indent=4)
 
-def listar_despesas(usuario_id):
-    with open(arquivo_despesas, 'r') as f:
+def verificar_despesa(transacao):
+    global dummy
+    dummy = False
+    try:
+        with open(arquivo_despesas, 'r') as f:
             despesas = json.load(f)
 
+
+        for despesa in despesas:
+            if despesa['transacao'] == transacao:
+                dummy = True
+    except FileNotFoundError:
+        print("\nArquivo com Despesas não encontrado!")
+    return dummy
+
+def listar_despesas(usuario_id):
+    with open(arquivo_despesas, 'r') as f:
+        despesas = json.load(f)
+
+    global contador
     contador = 0
     table = PrettyTable()
     tabela = []
@@ -276,20 +333,23 @@ def listar_despesas(usuario_id):
     for despesa in despesas:
         if despesa['id'] == usuario_id:
             contador += 1
-            despesa_ = [despesa['transacao'], despesa['valor'], despesa['data'], despesa['categoria'], despesa['descricao']]
+            despesa_ = [despesa['transacao'], despesa['valor'], despesa['data'], despesa['categoria'],
+                        despesa['descricao']]
             tabela.append(despesa_)
-        
+
     if contador == 0:
         print("\nDespesas não encontradas!")
+        return contador
     else:
         table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [AAAA-MM-DD]", "CATEGORIA", "DESCRIÇÃO"]
         for elemento in tabela:
             table.add_row(elemento)
         print(table)
 
+
 def alterar_despesas(transacao_, novo_valor, nova_data, nova_categoria, nova_descricao):
     with open(arquivo_despesas, 'r') as f:
-            despesas = json.load(f)
+        despesas = json.load(f)
 
     for despesa in despesas:
         if despesa['transacao'] == transacao_:
@@ -298,54 +358,64 @@ def alterar_despesas(transacao_, novo_valor, nova_data, nova_categoria, nova_des
             despesa['categoria'] = nova_categoria
             despesa['descricao'] = nova_descricao
             break
-    
+
     with open(arquivo_despesas, 'w') as f:
         json.dump(despesas, f, indent=4)
     print("\nDespesa atualizado com sucesso!")
-    input("\nTecle [ENTER] para prosseguir") 
+    input("\nTecle [ENTER] para prosseguir")
+
 
 def excluir_despesa(transacao_):
+    global contador
+    contador = 0
     with open(arquivo_despesas, 'r') as f:
         despesas = json.load(f)
-    
+
     for despesa in despesas:
         if despesa['transacao'] == transacao_:
             despesas.remove(despesa)
+            print("\nDespesa excluído com sucesso!")
+            contador = 1
 
     with open(arquivo_despesas, 'w') as f:
         json.dump(despesas, f, indent=4)
-    print("\nDespesa excluído com sucesso!")
+
+    if (contador == 0):
+        print("Por favor, digite uma transação valida!")
+
     input("\nTecle [ENTER] para prosseguir")
 
-#Função que exclui todas as receitas e despesas de um usuário. Utilizada para quando um usuário específico for excluído
+
+# Função que exclui todas as receitas e despesas de um usuário. Utilizada para quando um usuário específico for excluído
 def apagar_receitas_despesas(usuario_id):
-    #Rotina de exclusão de despesas
+    # Rotina de exclusão de despesas
     with open(arquivo_despesas, 'r') as f:
         despesas = json.load(f)
-    
+
     for despesa in despesas:
         if despesa['id'] == usuario_id:
             despesas.remove(despesa)
-    
+
     with open(arquivo_despesas, 'w') as f:
         json.dump(despesas, f, indent=4)
-    
-    #Rotina de exclusão de receitas
+
+    # Rotina de exclusão de receitas
     with open(arquivo_receitas, 'r') as f:
-            receitas = json.load(f)
+        receitas = json.load(f)
 
     for receita in receitas:
         if receita['id'] == usuario_id:
             receitas.remove(receita)
-    
+
     with open(arquivo_receitas, 'w') as f:
         json.dump(receitas, f, indent=4)
 
+
 def categoria_receitas():
-    print (" ---->>> CATEGORIA DE RECEITAS <<<---- ")
-    print ("          1 - SALÁRIO ")
-    print ("          2 - INVESTIMENTO ")
-    print ("          3 - OUTROS ")
+    print(" ---->>> CATEGORIA DE RECEITAS <<<---- ")
+    print("          1 - SALÁRIO ")
+    print("          2 - INVESTIMENTO ")
+    print("          3 - OUTROS ")
 
     opcao_ = input("Escolha a categoria da receita: ")
 
@@ -361,22 +431,23 @@ def categoria_receitas():
             break
         else:
             print("\nOpção inválida!")
-            print (" ---->>> CATEGORIA DE RECEITAS <<<---- ")
-            print ("          1 - SALÁRIO ")
-            print ("          2 - INVESTIMENTO ")
-            print ("          3 - OUTROS ")
+            print(" ---->>> CATEGORIA DE RECEITAS <<<---- ")
+            print("          1 - SALÁRIO ")
+            print("          2 - INVESTIMENTO ")
+            print("          3 - OUTROS ")
             opcao_ = input("Escolha a categoria da receita: ")
 
     return categoria_
 
+
 def categoria_despesas():
-    print (" ---->>> CATEGORIA DE DESPESAS <<<---- ")
-    print ("          1 - ALIMENTAÇÃO ")
-    print ("          2 - TRANSPORTE/CARRO ")
-    print ("          3 - HABITAÇÃO/MORADIA ")
-    print ("          4 - EDUCAÇÃO ")
-    print ("          5 - LAZER ")
-    print ("          6 - OUTROS ")
+    print(" ---->>> CATEGORIA DE DESPESAS <<<---- ")
+    print("          1 - ALIMENTAÇÃO ")
+    print("          2 - TRANSPORTE/CARRO ")
+    print("          3 - HABITAÇÃO/MORADIA ")
+    print("          4 - EDUCAÇÃO ")
+    print("          5 - LAZER ")
+    print("          6 - OUTROS ")
 
     opcao_ = input("Escolha a categoria da despesa: ")
 
@@ -400,16 +471,17 @@ def categoria_despesas():
             categoria_ = "outros"
             break
         else:
-            print (" ---->>> CATEGORIA DE DESPESAS <<<---- ")
-            print ("          1 - ALIMENTAÇÃO ")
-            print ("          2 - TRANSPORTE/CARRO ")
-            print ("          3 - HABITAÇÃO/MORADIA ")
-            print ("          4 - EDUCAÇÃO ")
-            print ("          5 - LAZER ")
-            print ("          6 - OUTROS ")
+            print(" ---->>> CATEGORIA DE DESPESAS <<<---- ")
+            print("          1 - ALIMENTAÇÃO ")
+            print("          2 - TRANSPORTE/CARRO ")
+            print("          3 - HABITAÇÃO/MORADIA ")
+            print("          4 - EDUCAÇÃO ")
+            print("          5 - LAZER ")
+            print("          6 - OUTROS ")
             opcao_ = input("Escolha a categoria da despesa: ")
 
     return categoria_
+
 
 def relatorio(opcao, usuario_id):
     match opcao:
@@ -417,7 +489,7 @@ def relatorio(opcao, usuario_id):
             try:
                 with open(arquivo_receitas, 'r') as f:
                     receitas = json.load(f)
-                
+
                 existe_receita = False
                 valor_total = 0
                 valor_salario = 0
@@ -433,17 +505,17 @@ def relatorio(opcao, usuario_id):
                     elif (receita['id'] == usuario_id) and (receita['categoria'] == 'outros'):
                         existe_receita = True
                         valor_outros += receita['valor']
-            
+
                 if existe_receita == False:
                     print("\nReceitas não encontradas!")
                     input("Pressione [ENTER] para continuar")
-                
+
                 if existe_receita == True:
                     table = PrettyTable()
                     valor_total = valor_salario + valor_investimento + valor_outros
-                    perc_salario = (valor_salario/valor_total) * 100
-                    perc_investimento = (valor_investimento/valor_total) * 100
-                    perc_outros = (valor_outros/valor_total) * 100
+                    perc_salario = (valor_salario / valor_total) * 100
+                    perc_investimento = (valor_investimento / valor_total) * 100
+                    perc_outros = (valor_outros / valor_total) * 100
                     table.field_names = ["CATEGORIA", "TOTAL REGISTRADO POR CATEGORIA (R$)", "PERCENTUAL (%)"]
                     table.add_rows(
                         [
@@ -452,7 +524,7 @@ def relatorio(opcao, usuario_id):
                             ["OUTROS", valor_outros, round(perc_outros, 2)],
                         ]
                     )
-                return print(table)
+                    return print(table)
             except FileNotFoundError:
                 print("\nArquivo com as Receitas dos usuários não encontrado!")
 
@@ -460,7 +532,7 @@ def relatorio(opcao, usuario_id):
             try:
                 with open(arquivo_despesas, 'r') as f:
                     despesas = json.load(f)
-                
+
                 existe_despesa = False
                 valor_total = 0
                 valor_alimentacao = 0
@@ -488,20 +560,20 @@ def relatorio(opcao, usuario_id):
                     elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'outros'):
                         existe_despesa = True
                         valor_outros += despesa['valor']
-            
+
                 if existe_despesa == False:
                     print("\nDespesas não encontradas!")
                     input("Pressione [ENTER] para continuar")
-                
+
                 if existe_despesa == True:
                     table = PrettyTable()
                     valor_total = valor_alimentacao + valor_transporte + valor_habitacao + valor_educacao + valor_lazer + valor_outros
-                    perc_alimentacao = (valor_alimentacao/valor_total) * 100
-                    perc_transporte = (valor_transporte/valor_total) * 100
-                    perc_habitacao = (valor_habitacao/valor_total) * 100
-                    perc_educacao = (valor_educacao/valor_total) * 100
-                    perc_lazer = (valor_lazer/valor_total) * 100
-                    perc_outros = (valor_outros/valor_total) * 100
+                    perc_alimentacao = (valor_alimentacao / valor_total) * 100
+                    perc_transporte = (valor_transporte / valor_total) * 100
+                    perc_habitacao = (valor_habitacao / valor_total) * 100
+                    perc_educacao = (valor_educacao / valor_total) * 100
+                    perc_lazer = (valor_lazer / valor_total) * 100
+                    perc_outros = (valor_outros / valor_total) * 100
                     table.field_names = ["CATEGORIA", "TOTAL REGISTRADO POR CATEGORIA (R$)", "PERCENTUAL (%)"]
                     table.add_rows(
                         [
@@ -513,9 +585,10 @@ def relatorio(opcao, usuario_id):
                             ["OUTROS", valor_outros, round(perc_outros, 2)],
                         ]
                     )
-                return print(table)
+                    return print(table)
             except FileNotFoundError:
                 print("\nArquivo com as Despesas dos usuários não encontrado!")
+
 
 def coletar_resposta(pergunta):
     while True:
@@ -525,9 +598,10 @@ def coletar_resposta(pergunta):
         else:
             print("Resposta inválida. Por favor, responda com 'a', 'b' ou 'c'.")
 
+
 def determinar_perfil():
     print("Bem-vindo ao Questionário de Perfil Financeiro!\n")
-    
+
     # Perguntas do questionário
     perguntas = [
         "1. O que você ganha por mês é o suficiente para arcar com seus custos?\n"
@@ -602,7 +676,7 @@ def determinar_perfil():
     # Coleta as respostas do usuário
     for pergunta in perguntas:
         resposta = coletar_resposta(pergunta)
-        
+
         if resposta == 'a':
             pontuacao += 10
         elif resposta == 'b':
@@ -624,39 +698,40 @@ def determinar_perfil():
 
     return perfil
 
+
 def exibir_mensagem_perfil(perfil):
     if perfil == "Investidor":
         mensagem = (
             "Você sabe exatamente onde está sendo utilizado o seu dinheiro e as principais possibilidades de investimento "
-            "e segurança para caso ocorra algum imprevisto, mantendo sua saúde financeira. Ser financeiramente consciente "
-            "não é uma tarefa fácil, exigindo disciplina e força de vontade para mudar de vida. Nunca se esqueça de que proteger "
-            "e poupar o seu dinheiro é uma forma de realizar seus sonhos. Planeje seus sonhos de curto, médio e longo prazo para "
-            "facilitar a busca por seus objetivos e tenha cuidado ao realizar investimentos, buscando sempre fontes confiáveis "
-            "para garantir que seu dinheiro esteja em boas mãos."
+            "\ne segurança para caso ocorra algum imprevisto, mantendo sua saúde financeira. Ser financeiramente consciente "
+            "\nnão é uma tarefa fácil, exigindo disciplina e força de vontade para mudar de vida. Nunca se esqueça de que proteger "
+            "\ne poupar o seu dinheiro é uma forma de realizar seus sonhos. Planeje seus sonhos de curto, médio e longo prazo para "
+            "\nfacilitar a busca por seus objetivos e tenha cuidado ao realizar investimentos, buscando sempre fontes confiáveis "
+            "\npara garantir que seu dinheiro esteja em boas mãos."
         )
     elif perfil == "Equilibrado Financeiramente":
         mensagem = (
             "Sua vida financeira está em um bom nível de estabilidade, mas a ausência ou o controle de dívidas não pode se tornar "
-            "um hábito. Você ainda não consolidou o costume de poupar ou investir dinheiro para obter lucros futuros. Seu equilíbrio "
-            "de gastos pode desestabilizar-se com surpresas no futuro. Realize um diagnóstico financeiro junto com sua família, "
-            "registrando todas as despesas e receitas para traçar metas a curto, médio e longo prazo, visando cumprir seus sonhos "
-            "de acordo com o tempo e o custo de cada objetivo."
+            "\num hábito. Você ainda não consolidou o costume de poupar ou investir dinheiro para obter lucros futuros. Seu equilíbrio "
+            "\nde gastos pode desestabilizar-se com surpresas no futuro. Realize um diagnóstico financeiro junto com sua família, "
+            "\nregistrando todas as despesas e receitas para traçar metas a curto, médio e longo prazo, visando cumprir seus sonhos "
+            "\nde acordo com o tempo e o custo de cada objetivo."
         )
     elif perfil == "Endividado":
         mensagem = (
             "Seu padrão financeiro saiu um pouco dos eixos, mas isso nem sempre significa um problema. Você precisa traçar um "
-            "diagnóstico para saber em qual momento a sua situação financeira deu um deslize. O Minhaeiro pode te ajudar a registrar "
-            "todas as despesas e receitas para visualizar oportunidades de redução de gastos e equilibrar suas finanças. Foque em "
-            "aprender sobre educação financeira e entender suas alternativas para definir um plano de ação. Mantenha a calma, não "
-            "se desanime, e mantenha o foco para passar pelos desafios com maturidade."
+            "\ndiagnóstico para saber em qual momento a sua situação financeira deu um deslize. O Minhaeiro pode te ajudar a registrar "
+            "\ntodas as despesas e receitas para visualizar oportunidades de redução de gastos e equilibrar suas finanças. Foque em "
+            "\naprender sobre educação financeira e entender suas alternativas para definir um plano de ação. Mantenha a calma, não "
+            "\nse desanime, e mantenha o foco para passar pelos desafios com maturidade."
         )
     elif perfil == "Superendividado":
         mensagem = (
             "Este é um momento para ter calma! Apesar da sua situação atual, você acaba de encontrar uma oportunidade de recomeço. "
-            "Não se culpe, mas tente entender as causas do superendividamento. Seja transparente com sua família sobre sua situação "
-            "financeira e faça um diagnóstico para entender a gravidade do problema. Após esse período inicial, definam sonhos a curto, "
-            "médio e longo prazo visando a saúde financeira da família. Lembre-se: ninguém nasceu endividado ou investidor; todos nós "
-            "podemos operar mudanças significativas em nossas vidas, e o segredo para isso está na educação financeira."
+            "\nNão se culpe, mas tente entender as causas do superendividamento. Seja transparente com sua família sobre sua situação "
+            "\nfinanceira e faça um diagnóstico para entender a gravidade do problema. Após esse período inicial, definam sonhos a curto, "
+            "\nmédio e longo prazo visando a saúde financeira da família. Lembre-se: ninguém nasceu endividado ou investidor; todos nós "
+            "\npodemos operar mudanças significativas em nossas vidas, e o segredo para isso está na educação financeira."
         )
     else:
         mensagem = "Perfil não reconhecido. Por favor, selecione um perfil válido."
@@ -664,76 +739,95 @@ def exibir_mensagem_perfil(perfil):
     print(f"\nSeu perfil financeiro é: {perfil}\n")
     print(mensagem)
 
-#Menu inicial do sistema
+
+# Menu inicial do sistema
 def menu_inicial():
-    print (cor.CIANO + "=" *55 + cor.RESET)
-    print (cor.VERDE + " ---->>> BEM VINDO AO MINHAEIRO <<<---- ")
-    print ("          1 - LOGAR NO SISTEMA ")
-    print ("          2 - CRIAR USUÁRIO ")
-    print ("          3 - SAIR ")
-    print (cor.CIANO + "=" *55 + cor.RESET)
 
-def modulos():
-    print (cor.CIANO + "=" *55 + cor.RESET)
-    print (cor.VERDE + " ---->>> MÓDULOS <<<---- ")
-    print("1. MÓDULO DO USUÁRIO")
-    print("2. MÓDULO DE RECEITAS")
-    print("3. MÓDULO DE DESPESAS")
-    print("4. MÓDULO DE RELATÓRIOS")
-    print("5. VOLTAR AO MENU ANTERIOR")
-    print (cor.CIANO + "=" *55 + cor.RESET)
+    print(cor.CIANO + "=" * 55 + cor.RESET)
+    print("  __  __   ___   _  _   _  _     _     ___   ___   ___    ___  ")
+    print(" |  \/  | |_ _| | \| | | || |   /_\   | __| |_ _| | _ \  / _ \ ")
+    print(" | |\/| |  | |  | .` | | __ |  / _ \  | _|   | |  |   / | (_) |")
+    print(" |_|  |_| |___| |_|\_| |_||_| /_/ \_\ |___| |___| |_|_\  \___/ ")
+    print("                                                               ")
+    print("                                        ")
+    print(cor.AMARELO + "         /////--////                    ")
+    print("       ////        ///                  ")
+    print("     ,////  /////// ///                 ")
+    print("     //////       /////", cor.AZUL + "     .%%%%%%     ")
+    print(cor.AMARELO + "      //////////  ////*", cor.AZUL + ".%%%%%%%%%       ")
+    print(cor.AMARELO + "       *///      //// ", cor.AZUL + "(%%%%%%%%%%       ")
+    print(cor.AMARELO + "          ///__///", cor.AZUL + "  %%%%%%%%%%%%%%%*    ")
+    print("       %%%%%%%%%%%%%%%%%%%%%\___/%%%%   ")
+    print("      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    print("     /%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    print("   O/ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   ")
+    print(" ´´    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%    ")
+    print("         %%%%%%%%%%%%%%%%%%%%%%%%%      ")
+    print("          %%%%%%%%%%%%%%%%%%%%%%%       ")
+    print("          \%%%%/    ***     \%%%/       " + cor.RESET)
+    print(1 * "\n")
+    print(cor.CIANO + "=" * 55 + cor.RESET)
+    print("          1 - LOGAR NO SISTEMA ")
+    print("          2 - CRIAR USUÁRIO ")
+    print("          3 - SAIR ")
+    print(cor.CIANO + "=" * 55 + cor.RESET)
 
-#Menu do usuário
+
+# Menu do usuário
 def modulo_usario():
-    print (cor.CIANO + "=" *55 + cor.RESET)
-    print (cor.VERDE + " ---->>> MÓDULO DO USUÁRIO <<<---- ")
+    print(cor.CIANO + "=" * 55 + cor.RESET)
+    print(cor.VERDE + " ---->>> MÓDULO DO USUÁRIO <<<---- ")
     print("1. LISTAR DADOS DO USUÁRIO")
     print("2. MODIFICAR DADOS DO USUÁRIO")
     print("3. EXCLUIR USUÁRIO")
     print("4. DESCOBRIR PERFIL FINANCEIRO")
     print("5. VOLTAR AO MENU ANTERIOR")
-    print (cor.CIANO + "=" *55 + cor.RESET)
+    print(cor.CIANO + "=" * 55 + cor.RESET)
+
 
 def modulo_receitas():
-    print (cor.CIANO + "=" *55 + cor.RESET)
-    print (cor.VERDE + " ---->>> MÓDULO DE RECEITAS <<<---- ")
+    print(cor.CIANO + "=" * 55 + cor.RESET)
+    print(cor.VERDE + " ---->>> MÓDULO DE RECEITAS <<<---- ")
     print("1. ADICIONAR RECEITA")
     print("2. LISTAR RECEITAS DO USUÁRIO")
     print("3. MODIFICAR RECEITAS")
     print("4. EXCLUIR RECEITAS")
     print("5. VOLTAR AO MENU ANTERIOR")
-    print (cor.CIANO + "=" *55 + cor.RESET)
+    print(cor.CIANO + "=" * 55 + cor.RESET)
+
 
 def modulo_despesas():
-    print (cor.CIANO + "=" *55 + cor.RESET)
-    print (cor.VERDE + " ---->>> MÓDULO DE DESPESAS <<<---- ")
+    print(cor.CIANO + "=" * 55 + cor.RESET)
+    print(cor.VERDE + " ---->>> MÓDULO DE DESPESAS <<<---- ")
     print("1. ADICIONAR DESPESA")
     print("2. LISTAR DESPESAS DO USUÁRIO")
     print("3. MODIFICAR DESPESAS")
     print("4. EXCLUIR DESPESAS")
     print("5. VOLTAR AO MENU ANTERIOR")
-    print (cor.CIANO + "=" *55 + cor.RESET)
+    print(cor.CIANO + "=" * 55 + cor.RESET)
+
 
 def modulo_relatório():
-    print (cor.CIANO + "=" *55 + cor.RESET)
-    print (cor.VERDE + " ---->>> MÓDULO DO RELATÓRIOS <<<---- ")
+    print(cor.CIANO + "=" * 55 + cor.RESET)
+    print(cor.VERDE + " ---->>> MÓDULO DO RELATÓRIOS <<<---- ")
     print("1. RELATÓRIOS DE RECEITAS")
     print("2. RELATÓRIOS DE DESPESAS")
     print("3. VOLTAR AO MENU ANTERIOR")
-    print (cor.CIANO + "=" *55 + cor.RESET)
+    print(cor.CIANO + "=" * 55 + cor.RESET)
+
 
 def main():
     while True:
         menu_inicial()
         opcao_inicial = input("Escolha uma opção: ")
 
-        match(opcao_inicial):
+        match (opcao_inicial):
             case '1':
                 email_ = input("\nDigite seu email cadastrado: ").lower()
                 senha_ = input("Digite a senha cadastrada: ").lower()
                 logar_usuario(email_, senha_)
 
-                #Entra no menu de módulos
+                # Entra no menu de módulos
                 while usuario_logado == True:
                     modulos()
                     opcao_modulo = input("Escolha uma opção: ")
@@ -768,7 +862,7 @@ def main():
                             sleep(3)
                             limpar_tela()
 
-                    elif opcao_modulo =='2':
+                    elif opcao_modulo == '2':
                         modulo_receitas()
                         opcao_modulo_receitas = input("Escolha uma opção: ")
 
@@ -777,23 +871,30 @@ def main():
                             data_receita = input("Informe a data da receita padrão [AAAA-MM-DD]: ")
                             categoria_receita = categoria_receitas()
                             descricao_receita = input("Digite uma descrição breve: ").lower()
-                            adicionar_receita(id_usuario, valor_receita, data_receita, categoria_receita, descricao_receita)
+                            adicionar_receita(id_usuario, valor_receita, data_receita, categoria_receita,
+                                              descricao_receita)
                         elif opcao_modulo_receitas == '2':
                             listar_receitas(id_usuario)
                         elif opcao_modulo_receitas == '3':
                             input("\nPressione [ENTER] para mostrar a lista de receitas cadastradas!")
                             listar_receitas(id_usuario)
-                            transacao = int(input("\nDigite a nº da transação que você deseja alterar: "))
-                            valor_novo = float(input("Digite o novo valor: "))
-                            data_nova = input("Digite a nova data padrão [AAAA-MM-DD]: ")
-                            categoria_nova = categoria_receitas()
-                            descricao_nova = input("Digite a nova descrição: ")
-                            alterar_receitas(transacao, valor_novo, data_nova, categoria_nova, descricao_nova)
+                            if(contador > 0):
+                                transacao = int(input("\nDigite a nº da transação que você deseja alterar: "))
+                                verificar_receita(transacao)
+                                if(dummy == False):
+                                    print("Por favor, digite uma transação valida!")
+                                else:
+                                    valor_novo = float(input("Digite o novo valor: "))
+                                    data_nova = input("Digite a nova data padrão [AAAA-MM-DD]: ")
+                                    categoria_nova = categoria_receitas()
+                                    descricao_nova = input("Digite a nova descrição: ")
+                                    alterar_receitas(transacao, valor_novo, data_nova, categoria_nova, descricao_nova)
                         elif opcao_modulo_receitas == '4':
                             input("\nPressione [ENTER] para mostrar a lista de receitas cadastradas!")
                             listar_receitas(id_usuario)
-                            transacao = int(input("\nDigite a nº da transação que você deseja excluir: "))
-                            excluir_receita(transacao)
+                            if(contador > 0):
+                                transacao = int(input("\nDigite a nº da transação que você deseja excluir: "))
+                                excluir_receita(transacao)
                         elif opcao_modulo_receitas == '5':
                             print("\nVoltando ao menu anterior!")
                             sleep(3)
@@ -807,29 +908,36 @@ def main():
                     elif opcao_modulo == '3':
                         modulo_despesas()
                         opcao_modulo_despesas = input("Escolha uma opção: ")
-                        
+
                         if opcao_modulo_despesas == '1':
                             valor_despesa = float(input("Digite o valor da despesa: "))
                             data_despesa = input("Informe a data da despesa padrão [AAAA-MM-DD]: ")
                             categoria_despesa = categoria_despesas()
                             descricao_despesa = input("Digite uma descrição breve: ").lower()
-                            adicionar_despesa(id_usuario, valor_despesa, data_despesa, categoria_despesa, descricao_despesa)
+                            adicionar_despesa(id_usuario, valor_despesa, data_despesa, categoria_despesa,
+                                              descricao_despesa)
                         elif opcao_modulo_despesas == '2':
                             listar_despesas(id_usuario)
                         elif opcao_modulo_despesas == '3':
                             input("\nPressione [ENTER] para mostrar a lista de despesass cadastradas!")
                             listar_despesas(id_usuario)
-                            transacao = int(input("\nDigite a nº da transação que você deseja alterar: "))
-                            valor_novo = float(input("Digite o novo valor: "))
-                            data_nova = input("Digite a nova data padrão [AAAA-MM-DD]: ")
-                            categoria_nova = categoria_despesas()
-                            descricao_nova = input("Digite a nova descrição: ")
-                            alterar_despesas(transacao, valor_novo, data_nova, categoria_nova, descricao_nova)
+                            if (contador > 0):
+                                transacao = int(input("\nDigite a nº da transação que você deseja alterar: "))
+                                verificar_despesa(transacao)
+                                if (dummy == False):
+                                    print("Por favor, digite uma transação valida!")
+                                else:
+                                    valor_novo = float(input("Digite o novo valor: "))
+                                    data_nova = input("Digite a nova data padrão [AAAA-MM-DD]: ")
+                                    categoria_nova = categoria_despesas()
+                                    descricao_nova = input("Digite a nova descrição: ")
+                                    alterar_despesas(transacao, valor_novo, data_nova, categoria_nova, descricao_nova)
                         elif opcao_modulo_despesas == '4':
                             input("\nPressione [ENTER] para mostrar a lista de despesas cadastradas!")
                             listar_despesas(id_usuario)
-                            transacao = int(input("\nDigite a nº da transação que você deseja excluir: "))
-                            excluir_despesa(transacao)
+                            if(contador > 0):
+                                transacao = int(input("\nDigite a nº da transação que você deseja excluir: "))
+                                excluir_despesa(transacao)
                         elif opcao_modulo_despesas == '5':
                             print("\nVoltando ao menu anterior!")
                             sleep(3)
@@ -855,21 +963,22 @@ def main():
                     else:
                         print("\nOpção inválida!")
                         sleep(3)
-         
+
             case '2':
                 nome_cadastro = input("Digite o seu nome: ").lower()
                 email_cadastro = input("Digite seu email: ").lower()
                 idade_cadastro = input("Digite seua idade: ").lower()
                 senha_cadastro = input("Digite uma senha de cadastro: ").lower()
                 criar_usuario(nome_cadastro, email_cadastro, idade_cadastro, senha_cadastro)
-            
+
             case '3':
                 print("Saindo do sistema!")
                 sleep(3)
                 break
-            
+
             case __:
                 print("Opção inválida. Tente novamente.")
-                
+
+
 if __name__ == "__main__":
     main()
