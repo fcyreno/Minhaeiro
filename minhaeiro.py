@@ -950,7 +950,7 @@ def main():
             case '2':
                 nome_cadastro = input("Digite o seu nome: ").lower()
                 email_cadastro = input("Digite seu email: ").lower()
-                idade_cadastro = input("Digite seua idade: ").lower()
+                idade_cadastro = input("Digite sua idade: ").lower()
                 senha_cadastro = input("Digite uma senha de cadastro: ").lower()
                 criar_usuario(nome_cadastro, email_cadastro, idade_cadastro, senha_cadastro)
 
