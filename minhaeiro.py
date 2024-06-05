@@ -200,7 +200,7 @@ def listar_receitas(usuario_id):
             return contador
         else:
             tabela.sort(key=lambda x: x[2], reverse=True)
-            table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [AAAA-MM-DD]", "CATEGORIA", "DESCRIÇÃO"]
+            table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [DD-MM-YY]", "CATEGORIA", "DESCRIÇÃO"]
             for elemento in tabela:
                 table.add_row(elemento)
             print(table)
@@ -312,7 +312,7 @@ def listar_despesas(usuario_id):
         return contador
     else:
         tabela.sort(key=lambda x: x[2], reverse=True)
-        table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [AAAA-MM-DD]", "CATEGORIA", "DESCRIÇÃO"]
+        table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [DD-MM-YY]", "CATEGORIA", "DESCRIÇÃO"]
         for elemento in tabela:
             table.add_row(elemento)
         print(table)
@@ -760,9 +760,9 @@ def modulo_usario():
 def data():
     while True:
         try:
-            date_str = input('Digite a sua data [AAAA-MM-DD]: ')
-            date_str = datetime.strptime(date_str, "%Y-%m-%d")
-            data_teste = datetime.strftime(date_str, "%Y-%m-%d")
+            date_str = input('Digite a sua data [DD-MM-YY]: ')
+            date_str = datetime.strptime(date_str, "%d-%m-%Y")
+            data_teste = datetime.strftime(date_str, "%d-%m-%Y")
             break
         except ValueError:
             print('Data inválida!')
