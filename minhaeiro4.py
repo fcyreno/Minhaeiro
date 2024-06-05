@@ -203,7 +203,7 @@ def listar_receitas(usuario_id):
             print("\nReceitas não encontradas!")
             return contador
         else:
-            table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [AAAA-MM-DD]", "CATEGORIA", "DESCRIÇÃO"]
+            table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [DD-MM-YY]", "CATEGORIA", "DESCRIÇÃO"]
             for elemento in tabela:
                 table.add_row(elemento)
             print(table)
@@ -314,7 +314,7 @@ def listar_despesas(usuario_id):
         print("\nDespesas não encontradas!")
         return contador
     else:
-        table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [AAAA-MM-DD]", "CATEGORIA", "DESCRIÇÃO"]
+        table.field_names = ["TRANSAÇÃO", "VALOR (R$)", "DATA [DD-MM-YY]", "CATEGORIA", "DESCRIÇÃO"]
         for elemento in tabela:
             table.add_row(elemento)
         print(table)
