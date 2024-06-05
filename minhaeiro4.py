@@ -1,13 +1,13 @@
-# Declaração das bibliotecas
-import os
 import json
+import os
+import random
 from datetime import datetime
 from time import sleep
-import random
+
 from prettytable import PrettyTable
 
 
-# Classe para manipular a cor dos caracteres
+
 class cor:
     VERMELHO = '\033[91m'
     VERDE = '\033[92m'
@@ -18,32 +18,29 @@ class cor:
     RESET = '\033[0m'
 
 
-# Definindo os arquivos JSON para armazenamento dos dados
-arquivo_usuarios = os.path.join(os.path.dirname(__file__), 'usuarios.json')  # Arquivo com os dados dos usuários
-arquivo_receitas = os.path.join(os.path.dirname(__file__), 'receitas.json')  # Arquivo com todas as receitas cadastradas
-arquivo_despesas = os.path.join(os.path.dirname(__file__), 'despesas.json')  # Arquivo com todas as despesas cadastradas
+arquivo_usuarios = os.path.join(os.path.dirname(__file__), 'usuarios.json')  
+arquivo_receitas = os.path.join(os.path.dirname(__file__), 'receitas.json')  
+arquivo_despesas = os.path.join(os.path.dirname(__file__), 'despesas.json')  
 
 
-# Limpa tela
+
 def limpar_tela():
-    # Verifica o sistema operacional para executar o comando de limpeza de tela correto
-    if os.name == 'nt':  # Para sistemas Windows
+    
+    if os.name == 'nt':  
         os.system('cls')
-    else:  # Para sistemas Unix/Linux/MacOS
+    else:  
         os.system('clear')
 
 
-# Logar com um usuário cadastrado
+
 def logar_usuario(email, senha):
-    # Declaração de variáveis globais para utilização fora da função logar_usuario()
+    
     global id_usuario, usuario_logado
 
-    # Carregando os dados dos usuários cadastrados
     try:
         with open(arquivo_usuarios, 'r') as f:
             usuarios = json.load(f)
-            arquivo = True  # Existe arquivo com os dados do usuário
-    # Caso arquivo com dados dos usuários não seja encontrado
+            arquivo = True  
     except FileNotFoundError:
         arquivo = False
         print("Arquivo de usuários não encontrado!")
@@ -52,13 +49,12 @@ def logar_usuario(email, senha):
         limpar_tela()
         menu_inicial()
 
-    # Processo de log-in de usuário
-    usuario_logado = False  # Inicializa usuario_logado como False
+    usuario_logado = False
     if arquivo == True:
         for usuario in usuarios:
             if (usuario['email'] == email) and (usuario['senha'] == senha):
                 id_usuario = usuario['id']
-                usuario_logado = True  # Usuario_logado só passa a ser True se log-in e senha forem encontrados na lista de usuários
+                usuario_logado = True 
                 print(f"\nUsuário {usuario['nome']} logado no sistema!")
                 input("\nPressione [ENTER] para continuar.")
         if usuario_logado == False:
@@ -67,38 +63,32 @@ def logar_usuario(email, senha):
             limpar_tela()
 
 
-# Criar/cadastrar um usuário
 def criar_usuario(nome, email, idade, senha):
-    # Carrega os dados dos usuários cadastrados
     try:
         with open(arquivo_usuarios, 'r') as f:
             usuarios = json.load(f)
             existe_arquivo = True
-    # Caso o arquivo com os dados dos usuários não seja encontrado (primeira execução do programa)
+    
     except FileNotFoundError:
-        usuarios = []  # É criada uma lista de usuários vazia
-        existe_arquivo = False  # Existência de arquivo é setado como False
+        usuarios = [] 
+        existe_arquivo = False 
 
-    # Definindo o id do usuário (número aleatório)
     hora_atual = datetime.now()
     segundo = hora_atual.second
     numero_aleatorio = random.randint(1, 1000)
     id_usuario_ = segundo * numero_aleatorio
 
-    # Inicializando o dicionário que irá receber os dados do usuário
     dic_usuario = {"id": id_usuario_, "nome": nome, "idade": idade, "senha": senha, "email": email}
-    usuarios.append(dic_usuario)  # Inserindo os dados do usuário no arquivo de lista de usuários
+    usuarios.append(dic_usuario)  
 
-    # Inserindo os dados do usuário no arquivo JSON
-    if existe_arquivo == True:  # Caso exista arquivo de usuários
+    if existe_arquivo == True:  
         with open(arquivo_usuarios, 'w') as f:
             json.dump(usuarios, f, indent=4)
-    else:  # Caso não exista arquivo de usuários (primeira execução do programa)
+    else: 
         with open(arquivo_usuarios, 'x') as f:
             json.dump(usuarios, f, indent=4)
 
 
-# Lista os dados do usuário logado
 def listar_dados_usuario(usuario_id):
     with open(arquivo_usuarios, 'r') as f:
         usuarios = json.load(f)
@@ -113,8 +103,6 @@ def listar_dados_usuario(usuario_id):
             input("Digite [ENTER] para prosseguir")
             break
 
-
-# Modifica os dados do usuário logado
 def modificar_dados_usuario(usuario_id, novo_nome, nova_idade, novo_email, nova_senha):
     with open(arquivo_usuarios, 'r') as f:
         usuarios = json.load(f)
@@ -134,7 +122,6 @@ def modificar_dados_usuario(usuario_id, novo_nome, nova_idade, novo_email, nova_
     input("\nTecle [ENTER] para prosseguir")
 
 
-# Exclui o usuário logado
 def excluir_usuario(usuario_id):
     global id_usuario, usuario_logado
 
@@ -154,39 +141,31 @@ def excluir_usuario(usuario_id):
     input("\nTecle [ENTER] para prosseguir")
 
 
-# Adicionar receita do usuário logado
 def adicionar_receita(usuario_id, valor_, data_, categoria_receitas_, descricao_receitas_):
-    # Carrega os dados de receitas cadastradas
     try:
         with open(arquivo_receitas, 'r') as f:
             receitas = json.load(f)
             existe_arquivo = True
-    # Caso o arquivo com as receitas não seja encontrado (primeira execução do programa)
     except FileNotFoundError:
-        receitas = []  # É criada uma lista de receitas vazia
-        existe_arquivo = False  # Existência de arquivo é setado como False
+        receitas = []
+        existe_arquivo = False 
 
-    # Definindo o número da transação de forma aleatória
     hora_atual = datetime.now()
     segundo = hora_atual.second
     numero_aleatorio = random.randint(1, 1000)
     transacao_ = segundo * numero_aleatorio
 
-    # Inicializando o dicionário que irá receber os dados de receitas
     dic_receitas = {"transacao": transacao_, "id": usuario_id, "valor": valor_, "data": data_,
                     "categoria": categoria_receitas_, "descricao": descricao_receitas_}
-    receitas.append(dic_receitas)  # Inserindo os dados de receitas no arquivo de lista de receitas
+    receitas.append(dic_receitas) 
 
-    # Inserindo os dados de receitas no arquivo JSON
-    if existe_arquivo == True:  # Caso exista arquivo de receitas
+    if existe_arquivo == True:
         with open(arquivo_receitas, 'w') as f:
             json.dump(receitas, f, indent=4)
-    else:  # Caso não exista arquivo de receitas (primeira execução do programa)
+    else:
         with open(arquivo_receitas, 'x') as f:
             json.dump(receitas, f, indent=4)
 
-
-# Verifica se o numero da receita existe
 
 def verificar_receita(transacao):
     global dummy
@@ -203,7 +182,6 @@ def verificar_receita(transacao):
         print("\nArquivo com Receitas não encontrado!")
     return dummy
 
-# Lista as receitas do usuário logado
 def listar_receitas(usuario_id):
     try:
         with open(arquivo_receitas, 'r') as f:
@@ -277,32 +255,27 @@ def excluir_receita(transacao_):
 
 
 def adicionar_despesa(usuario_id, valor_, data_, categoria_despesas_, descricao_despesas_):
-    # Carrega os dados de despesas cadastradas
     try:
         with open(arquivo_despesas, 'r') as f:
             despesas = json.load(f)
             existe_arquivo = True
-    # Caso o arquivo com as despesas não seja encontrado (primeira execução do programa)
     except FileNotFoundError:
-        despesas = []  # É criada uma lista de despesas vazia
-        existe_arquivo = False  # Existência de arquivo é setado como False
+        despesas = []
+        existe_arquivo = False  
 
-    # Definindo o número da transação de forma aleatória
     hora_atual = datetime.now()
     segundo = hora_atual.second
     numero_aleatorio = random.randint(1, 1000)
     transacao_ = segundo * numero_aleatorio
 
-    # Inicializando o dicionário que irá receber os dados de despesas
     dic_despesas = {"transacao": transacao_, "id": usuario_id, "valor": valor_, "data": data_,
                     "categoria": categoria_despesas_, "descricao": descricao_despesas_}
-    despesas.append(dic_despesas)  # Inserindo os dados de receitas no arquivo de lista de receitas
+    despesas.append(dic_despesas)
 
-    # Inserindo os dados de despesas no arquivo JSON
-    if existe_arquivo == True:  # Caso exista arquivo de despesas
+    if existe_arquivo == True:
         with open(arquivo_despesas, 'w') as f:
             json.dump(despesas, f, indent=4)
-    else:  # Caso não exista arquivo de despesas (primeira execução do programa)
+    else: 
         with open(arquivo_despesas, 'x') as f:
             json.dump(despesas, f, indent=4)
 
@@ -386,9 +359,7 @@ def excluir_despesa(transacao_):
     input("\nTecle [ENTER] para prosseguir")
 
 
-# Função que exclui todas as receitas e despesas de um usuário. Utilizada para quando um usuário específico for excluído
 def apagar_receitas_despesas(usuario_id):
-    # Rotina de exclusão de despesas
     with open(arquivo_despesas, 'r') as f:
         despesas = json.load(f)
 
@@ -399,7 +370,6 @@ def apagar_receitas_despesas(usuario_id):
     with open(arquivo_despesas, 'w') as f:
         json.dump(despesas, f, indent=4)
 
-    # Rotina de exclusão de receitas
     with open(arquivo_receitas, 'r') as f:
         receitas = json.load(f)
 
@@ -602,7 +572,6 @@ def coletar_resposta(pergunta):
 def determinar_perfil():
     print("Bem-vindo ao Questionário de Perfil Financeiro!\n")
 
-    # Perguntas do questionário
     perguntas = [
         "1. O que você ganha por mês é o suficiente para arcar com seus custos?\n"
         "a) Consigo pagar as minhas despesas e guardar mais 10% dos meus ganhos;\n"
@@ -670,10 +639,10 @@ def determinar_perfil():
         "c) Compro e depois vejo como vou conseguir pagar.\n"
     ]
 
-    # Inicializa a pontuação
+    
     pontuacao = 0
 
-    # Coleta as respostas do usuário
+   
     for pergunta in perguntas:
         resposta = coletar_resposta(pergunta)
 
@@ -684,7 +653,7 @@ def determinar_perfil():
         elif resposta == 'c':
             pontuacao += 0
 
-    # Determina o perfil com base na pontuação
+   
     if pontuacao >= 95:
         perfil = "Investidor"
     elif 65 <= pontuacao <= 90:
@@ -740,14 +709,14 @@ def exibir_mensagem_perfil(perfil):
     print(mensagem)
 
 
-# Menu inicial do sistema
+
 def menu_inicial():
 
     print(cor.CIANO + "=" * 55 + cor.RESET)
     print("  __  __   ___   _  _   _  _     _     ___   ___   ___    ___  ")
-    print(" |  \/  | |_ _| | \| | | || |   /_\   | __| |_ _| | _ \  / _ \ ")
-    print(" | |\/| |  | |  | .` | | __ |  / _ \  | _|   | |  |   / | (_) |")
-    print(" |_|  |_| |___| |_|\_| |_||_| /_/ \_\ |___| |___| |_|_\  \___/ ")
+    print(r" |  \/  | |_ _| | \| | | || |   /_\   | __| |_ _| | _ \  / _ \ ")
+    print(r" | |\/| |  | |  | .` | | __ |  / _ \  | _|   | |  |   / | (_) |")
+    print(r" |_|  |_| |___| |_|\_| |_||_| /_/ \_\ |___| |___| |_|_\  \___/ ")
     print("                                                               ")
     print("                                        ")
     print(cor.AMARELO + "         /////--////                    ")
@@ -757,14 +726,14 @@ def menu_inicial():
     print(cor.AMARELO + "      //////////  ////*", cor.AZUL + ".%%%%%%%%%       ")
     print(cor.AMARELO + "       *///      //// ", cor.AZUL + "(%%%%%%%%%%       ")
     print(cor.AMARELO + "          ///__///", cor.AZUL + "  %%%%%%%%%%%%%%%*    ")
-    print("       %%%%%%%%%%%%%%%%%%%%%\___/%%%%   ")
+    print(r"       %%%%%%%%%%%%%%%%%%%%%\___/%%%%   ")
     print("      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
     print("     /%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
     print("   O/ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   ")
     print(" ´´    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%    ")
     print("         %%%%%%%%%%%%%%%%%%%%%%%%%      ")
     print("          %%%%%%%%%%%%%%%%%%%%%%%       ")
-    print("          \%%%%/    ***     \%%%/       " + cor.RESET)
+    print(r"          \%%%%/    ***     \%%%/       " + cor.RESET)
     print(1 * "\n")
     print(cor.CIANO + "=" * 55 + cor.RESET)
     print("          1 - LOGAR NO SISTEMA ")
@@ -784,7 +753,6 @@ def modulos():
     print (cor.CIANO + "=" *55 + cor.RESET)
 
 
-# Menu do usuário
 def modulo_usario():
     print(cor.CIANO + "=" * 55 + cor.RESET)
     print(cor.VERDE + " ---->>> MÓDULO DO USUÁRIO <<<---- ")
@@ -795,6 +763,16 @@ def modulo_usario():
     print("5. VOLTAR AO MENU ANTERIOR")
     print(cor.CIANO + "=" * 55 + cor.RESET)
 
+def data():
+    while True:
+        try:
+            date_str = input('Digite a sua data [AAAA-MM-DD]: ')
+            date_str = datetime.strptime(date_str, "%Y-%m-%d")
+            data_teste = datetime.strftime(date_str, "%Y-%m-%d")
+            break
+        except ValueError:
+            print('Data inválida!')
+    return data_teste
 
 def modulo_receitas():
     print(cor.CIANO + "=" * 55 + cor.RESET)
@@ -838,7 +816,7 @@ def main():
                 senha_ = input("Digite a senha cadastrada: ").lower()
                 logar_usuario(email_, senha_)
 
-                # Entra no menu de módulos
+                
                 while usuario_logado == True:
                     modulos()
                     opcao_modulo = input("Escolha uma opção: ")
@@ -879,7 +857,7 @@ def main():
 
                         if opcao_modulo_receitas == '1':
                             valor_receita = float(input("Digite o valor da receita: "))
-                            data_receita = input("Informe a data da receita padrão [AAAA-MM-DD]: ")
+                            data_receita = data()
                             categoria_receita = categoria_receitas()
                             descricao_receita = input("Digite uma descrição breve: ").lower()
                             adicionar_receita(id_usuario, valor_receita, data_receita, categoria_receita,
@@ -896,7 +874,7 @@ def main():
                                     print("Por favor, digite uma transação valida!")
                                 else:
                                     valor_novo = float(input("Digite o novo valor: "))
-                                    data_nova = input("Digite a nova data padrão [AAAA-MM-DD]: ")
+                                    data_nova = data()
                                     categoria_nova = categoria_receitas()
                                     descricao_nova = input("Digite a nova descrição: ")
                                     alterar_receitas(transacao, valor_novo, data_nova, categoria_nova, descricao_nova)
@@ -922,7 +900,7 @@ def main():
 
                         if opcao_modulo_despesas == '1':
                             valor_despesa = float(input("Digite o valor da despesa: "))
-                            data_despesa = input("Informe a data da despesa padrão [AAAA-MM-DD]: ")
+                            data_despesa = data()
                             categoria_despesa = categoria_despesas()
                             descricao_despesa = input("Digite uma descrição breve: ").lower()
                             adicionar_despesa(id_usuario, valor_despesa, data_despesa, categoria_despesa,
@@ -930,7 +908,7 @@ def main():
                         elif opcao_modulo_despesas == '2':
                             listar_despesas(id_usuario)
                         elif opcao_modulo_despesas == '3':
-                            input("\nPressione [ENTER] para mostrar a lista de despesass cadastradas!")
+                            input("\nPressione [ENTER] para mostrar a lista de despesas cadastradas!")
                             listar_despesas(id_usuario)
                             if (contador > 0):
                                 transacao = int(input("\nDigite a nº da transação que você deseja alterar: "))
@@ -939,7 +917,7 @@ def main():
                                     print("Por favor, digite uma transação valida!")
                                 else:
                                     valor_novo = float(input("Digite o novo valor: "))
-                                    data_nova = input("Digite a nova data padrão [AAAA-MM-DD]: ")
+                                    data_nova = data()
                                     categoria_nova = categoria_despesas()
                                     descricao_nova = input("Digite a nova descrição: ")
                                     alterar_despesas(transacao, valor_novo, data_nova, categoria_nova, descricao_nova)
