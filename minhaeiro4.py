@@ -25,7 +25,7 @@ arquivo_despesas = os.path.join(os.path.dirname(__file__), 'despesas.json')
 
 
 def limpar_tela():
-    
+
     if os.name == 'nt':  
         os.system('cls')
     else:  
@@ -34,7 +34,7 @@ def limpar_tela():
 
 
 def logar_usuario(email, senha):
-    
+
     global id_usuario, usuario_logado
 
     try:
@@ -68,7 +68,7 @@ def criar_usuario(nome, email, idade, senha):
         with open(arquivo_usuarios, 'r') as f:
             usuarios = json.load(f)
             existe_arquivo = True
-    
+
     except FileNotFoundError:
         usuarios = [] 
         existe_arquivo = False 
@@ -639,10 +639,10 @@ def determinar_perfil():
         "c) Compro e depois vejo como vou conseguir pagar.\n"
     ]
 
-    
+
     pontuacao = 0
 
-   
+
     for pergunta in perguntas:
         resposta = coletar_resposta(pergunta)
 
@@ -653,7 +653,7 @@ def determinar_perfil():
         elif resposta == 'c':
             pontuacao += 0
 
-   
+
     if pontuacao >= 95:
         perfil = "Investidor"
     elif 65 <= pontuacao <= 90:
@@ -766,9 +766,9 @@ def modulo_usario():
 def data():
     while True:
         try:
-            date_str = input('Digite a sua data [AAAA-MM-DD]: ')
-            date_str = datetime.strptime(date_str, "%Y-%m-%d")
-            data_teste = datetime.strftime(date_str, "%Y-%m-%d")
+            date_str = input('Digite a sua data [DD-MM-YY]: ')
+            date_str = datetime.strptime(date_str, "%d-%m-%Y")
+            data_teste = datetime.strftime(date_str, "%d-%m-%Y")
             break
         except ValueError:
             print('Data inválida!')
@@ -816,7 +816,7 @@ def main():
                 senha_ = input("Digite a senha cadastrada: ").lower()
                 logar_usuario(email_, senha_)
 
-                
+
                 while usuario_logado == True:
                     modulos()
                     opcao_modulo = input("Escolha uma opção: ")
