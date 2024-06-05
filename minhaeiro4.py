@@ -773,6 +773,17 @@ def menu_inicial():
     print(cor.CIANO + "=" * 55 + cor.RESET)
 
 
+def modulos():
+    print (cor.CIANO + "=" *55 + cor.RESET)
+    print (cor.VERDE + " ---->>> MÓDULOS <<<---- ")
+    print("1. MÓDULO DO USUÁRIO")
+    print("2. MÓDULO DE RECEITAS")
+    print("3. MÓDULO DE DESPESAS")
+    print("4. MÓDULO DE RELATÓRIOS")
+    print("5. VOLTAR AO MENU ANTERIOR")
+    print (cor.CIANO + "=" *55 + cor.RESET)
+
+
 # Menu do usuário
 def modulo_usario():
     print(cor.CIANO + "=" * 55 + cor.RESET)
