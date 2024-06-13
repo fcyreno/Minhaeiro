@@ -767,7 +767,29 @@ def data():
         except ValueError:
             print('Data inválida!')
     return data_teste
+def idade():
+    while True:
+        try:
+            idade_cadastro2 = int(input('Digite a sua idade: '))
+            if(idade_cadastro2 <=0):
+                print('Sua idade deve ser maior do que 0!')
+            else:
+                break
+        except ValueError:
+            print('Idade inválida!')
+    return idade_cadastro2
 
+def nova_idade():
+    while True:
+        try:
+            idade_nova = int(input('Digite a sua nova idade: '))
+            if(idade_nova <=0):
+                print('Sua idade deve ser maior do que 0!')
+            else:
+                break
+        except ValueError:
+            print('Idade inválida!')
+    return idade_nova
 
 def modulo_receitas():
     print(cor.CIANO + "=" * 55 + cor.RESET)
@@ -823,7 +845,7 @@ def main():
                             listar_dados_usuario(id_usuario)
                         elif opcao_modulo_usuario == '2':
                             nome_novo = input("Digite o novo nome: ")
-                            idade_nova = input("Digite a nova idade: ")
+                            idade_nova = nova_idade()
                             email_novo = input("Digite o novo e-mail: ")
                             senha_nova = input("Digite a nova senha: ")
                             modificar_dados_usuario(id_usuario, nome_novo, idade_nova, email_novo, senha_nova)
@@ -950,7 +972,7 @@ def main():
             case '2':
                 nome_cadastro = input("Digite o seu nome: ").lower()
                 email_cadastro = input("Digite seu email: ").lower()
-                idade_cadastro = input("Digite sua idade: ").lower()
+                idade_cadastro = idade()
                 senha_cadastro = input("Digite uma senha de cadastro: ").lower()
                 criar_usuario(nome_cadastro, email_cadastro, idade_cadastro, senha_cadastro)
 
