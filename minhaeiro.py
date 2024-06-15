@@ -516,10 +516,10 @@ def relatorio(opcao, usuario_id):
                     elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'transporte/carro'):
                         existe_despesa = True
                         valor_transporte += despesa['valor']
-                    elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'habitação/moradia'):
+                    elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'habitacao/moradia'):
                         existe_despesa = True
                         valor_habitacao += despesa['valor']
-                    elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'educação'):
+                    elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'educacao'):
                         existe_despesa = True
                         valor_educacao += despesa['valor']
                     elif (despesa['id'] == usuario_id) and (despesa['categoria'] == 'lazer'):
